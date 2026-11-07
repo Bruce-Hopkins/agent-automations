@@ -1,9 +1,9 @@
 #!/bin/sh
-# Installs agents-automations on macOS, Linux or WSL2:
+# Installs leafi on macOS, Linux or WSL2:
 #
-#   curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/leafi/main/install.sh | sh
 #
-# It downloads the MCP server, a single file, to ~/.agents-automations, then
+# It downloads the MCP server, a single file, to ~/.leafi, then
 # runs its setup. The setup shows a checklist of the agents it finds (Hermes,
 # Claude Code, Claude Desktop, Cursor) and installs only into the ones you
 # tick, then asks for a provider API key and which permissions flows may use.
@@ -11,19 +11,19 @@
 # server and repeats the setup.
 #
 # The server file also runs the flow commands (validate, graph, run, ...), so
-# the script links the agents-automations command to it, in ~/.local/bin or
-# AGENTS_AUTOMATIONS_BIN_DIR. If that folder is not on your PATH, it prints the
+# the script links the leafi command to it, in ~/.local/bin or
+# LEAFI_BIN_DIR. If that folder is not on your PATH, it prints the
 # line that adds it.
 #
 # To install a fork or a local build instead:
-#   AGENTS_AUTOMATIONS_SERVER_URL     where the server file is downloaded from
-#   AGENTS_AUTOMATIONS_PLUGIN_SOURCE  what `hermes plugins install` is given
+#   LEAFI_SERVER_URL     where the server file is downloaded from
+#   LEAFI_PLUGIN_SOURCE  what `hermes plugins install` is given
 set -eu
 
-repo=Bruce-Hopkins/agent-automations
-server_url=${AGENTS_AUTOMATIONS_SERVER_URL:-https://raw.githubusercontent.com/$repo/main/hermes-plugin/dist/server.mjs}
-bin_dir=${AGENTS_AUTOMATIONS_BIN_DIR:-$HOME/.local/bin}
-command_path=$bin_dir/agents-automations
+repo=Bruce-Hopkins/leafi
+server_url=${LEAFI_SERVER_URL:-https://raw.githubusercontent.com/$repo/main/hermes-plugin/dist/server.mjs}
+bin_dir=${LEAFI_BIN_DIR:-$HOME/.local/bin}
+command_path=$bin_dir/leafi
 
 say() { printf '%s\n' "$*" >&2; }
 fail() { say "Error: $*"; exit 1; }
@@ -46,7 +46,15 @@ command -v node >/dev/null 2>&1 || fail "Node.js 22 or newer is required: https:
 major=$(node -p 'process.versions.node.split(".")[0]')
 [ "$major" -ge 22 ] 2>/dev/null || fail "Node.js 22 or newer is required; this machine has $(node -v)."
 
-dir=${AGENTS_AUTOMATIONS_HOME:-$HOME/.agents-automations}
+# leafi was called agents-automations before 0.0.3. A home folder set under the
+# old name is still used, and the old default folder is moved, settings, saved
+# flows and runs included, so an update keeps them.
+dir=${LEAFI_HOME:-${AGENTS_AUTOMATIONS_HOME:-$HOME/.leafi}}
+legacy_dir=$HOME/.agents-automations
+if [ -z "${LEAFI_HOME:-}${AGENTS_AUTOMATIONS_HOME:-}" ] && [ ! -e "$dir" ] && [ -d "$legacy_dir" ]; then
+  mv "$legacy_dir" "$dir"
+  say "Moved $legacy_dir to $dir (agents-automations is now called leafi)."
+fi
 server=$dir/server.mjs
 mkdir -p "$dir"
 chmod 700 "$dir"
@@ -60,7 +68,12 @@ mv "$server.part" "$server"
 linked=no
 if mkdir -p "$bin_dir" 2>/dev/null && ln -sf "$server" "$command_path" 2>/dev/null; then
   linked=yes
-  say "Linked the agents-automations command: $command_path"
+  say "Linked the leafi command: $command_path"
+  # The command from before the rename pointed into the old folder; it now
+  # runs the same server, so scripts that use it keep working.
+  if [ -L "$bin_dir/agents-automations" ] && ln -sf "$server" "$bin_dir/agents-automations" 2>/dev/null; then
+    say "The old agents-automations command still works and runs leafi."
+  fi
 else
   say "Could not create $command_path; run the commands as node \"$server\" <command> instead."
 fi
@@ -79,15 +92,15 @@ fi
 if [ "$linked" = yes ]; then
   case ":$PATH:" in
     *":$bin_dir:"*)
-      found=$(command -v agents-automations 2>/dev/null || true)
+      found=$(command -v leafi 2>/dev/null || true)
       if [ -n "$found" ] && [ "$found" != "$command_path" ]; then
         say ""
-        say "Note: $found comes first on your PATH, so agents-automations runs that one, not $command_path."
+        say "Note: $found comes first on your PATH, so leafi runs that one, not $command_path."
       fi
       ;;
     *)
       say ""
-      say "$bin_dir is not on your PATH. To type agents-automations, add this line to"
+      say "$bin_dir is not on your PATH. To type leafi, add this line to"
       say "your shell's profile (~/.zshrc, ~/.bashrc or ~/.profile) and open a new terminal:"
       say "  export PATH=\"$bin_dir:\$PATH\""
       ;;

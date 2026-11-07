@@ -7,7 +7,7 @@ test('an unresolved env placeholder is not a provider key', () => {
   process.env.OPENAI_API_KEY = '${OPENAI_API_KEY}';
 
   try {
-    const config = new RuntimeConfig({ dataDir: '/tmp/agents-automations-runtime-config-test' });
+    const config = new RuntimeConfig({ dataDir: '/tmp/leafi-runtime-config-test' });
     assert.equal(config.apiKeyFor('openai'), undefined);
     assert.ok(!config.availableProviders().some((provider) => provider.id === 'openai'));
   } finally {
@@ -24,7 +24,7 @@ test('a real provider key stays configured', () => {
   process.env.OPENAI_API_KEY = 'sk-test-value';
 
   try {
-    const config = new RuntimeConfig({ dataDir: '/tmp/agents-automations-runtime-config-test' });
+    const config = new RuntimeConfig({ dataDir: '/tmp/leafi-runtime-config-test' });
     assert.equal(config.apiKeyFor('openai'), 'sk-test-value');
     assert.ok(config.availableProviders().some((provider) => provider.id === 'openai'));
   } finally {

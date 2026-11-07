@@ -4,10 +4,10 @@ import { FLOW_SCHEMA } from '../../app/flow-schema';
 export function registerFlowSchemaResource(server: McpServer): void {
   server.registerResource(
     'flow-schema',
-    'agents-automations://schema/flow',
+    'leafi://schema/flow',
     {
       title: 'Flow JSON Schema',
-      description: 'The contract for a agents-automations flow document.',
+      description: 'The contract for a leafi flow document.',
       mimeType: 'application/schema+json',
     },
     async (uri) => ({

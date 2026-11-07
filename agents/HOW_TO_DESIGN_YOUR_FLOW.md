@@ -4,7 +4,7 @@ This file is about what a flow should look like: which agents, wired how, ending
 where. For flow semantics, `inputs` and joins, branches and fan-out, the
 workspace, and the command contract, read [`AGENTS.md`](../AGENTS.md).
 
-Read `agents-automations schema example` for a flow in the expected document shape.
+Read `leafi schema example` for a flow in the expected document shape.
 That example illustrates the format; it is not a template for every task.
 
 ## Checklist before you finish or run

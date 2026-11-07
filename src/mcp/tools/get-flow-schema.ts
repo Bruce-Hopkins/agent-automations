@@ -9,7 +9,7 @@ const inputSchema = z.object({});
 export const getFlowSchemaTool: ToolDefinition<z.infer<typeof inputSchema>> = {
   name: "get_flow_schema",
   description:
-    'Return the JSON Schema for a agents-automations flow document, plus "designGuide": the rules for choosing node boundaries, tiers and wiring. Read the guide before authoring a flow.',
+    'Return the JSON Schema for a leafi flow document, plus "designGuide": the rules for choosing node boundaries, tiers and wiring. Read the guide before authoring a flow.',
   inputSchema,
   annotations: { readOnlyHint: true },
   async handle(_input, context: McpContext) {

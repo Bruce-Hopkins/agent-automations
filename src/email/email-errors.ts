@@ -5,7 +5,7 @@ import type { EmailCredentials } from '../domain/types';
 export class EmailError extends Error {}
 
 export class EmailNotConfiguredError extends EmailError {
-  constructor(message = 'No mailbox is configured. Set AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD in the environment.') {
+  constructor(message = 'No mailbox is configured. Set LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD in the environment.') {
     super(message);
     this.name = 'EmailNotConfiguredError';
   }
@@ -18,7 +18,7 @@ export class EmailNotConfiguredError extends EmailError {
  */
 export class EmailAuthError extends EmailError {
   constructor(
-    message = 'The mailbox rejected the login. With Gmail, check that 2-Step Verification is on and that AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD is a current app password — Google does not accept the account password over IMAP.',
+    message = 'The mailbox rejected the login. With Gmail, check that 2-Step Verification is on and that LEAFI_EMAIL_APP_PASSWORD is a current app password — Google does not accept the account password over IMAP.',
   ) {
     super(message);
     this.name = 'EmailAuthError';

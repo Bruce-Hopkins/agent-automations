@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Leaf made of linked agents">
+  <title>Leaf agent graph logo</title>
+  <defs>
+    <linearGradient id="leaf" gradientUnits="userSpaceOnUse" x1="112" y1="469" x2="404" y2="41">
+      <stop offset="0" stop-color="#06B6D4"/>
+      <stop offset="0.55" stop-color="#10B981"/>
+      <stop offset="1" stop-color="#A3E635"/>
+    </linearGradient>
+    <!-- Keeps the white graph inside the leaf, so the stem ends exactly at the leaf edge -->
+    <mask id="shape" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <path fill="#fff" stroke="#fff" stroke-width="10" stroke-linejoin="round" d="M341 46 C380 72 398 130 399 200 C400 270 392 330 372 380 C352 430 310 462 262 464 C220 466 178 446 150 410 C122 374 112 320 124 280 C136 240 160 222 200 204 C250 182 285 150 313 106 C326 86 334 66 341 46Z"/>
+    </mask>
+  </defs>
+
+  <g transform="translate(256 256) scale(0.988) translate(-259.5 -255.5)">
+    <path fill="url(#leaf)" stroke="url(#leaf)" stroke-width="10" stroke-linejoin="round" d="M341 46 C380 72 398 130 399 200 C400 270 392 330 372 380 C352 430 310 462 262 464 C220 466 178 446 150 410 C122 374 112 320 124 280 C136 240 160 222 200 204 C250 182 285 150 313 106 C326 86 334 66 341 46Z"/>
+
+    <!-- The agent graph: always white -->
+    <g mask="url(#shape)" stroke="#FFFFFF" fill="#FFFFFF">
+      <g stroke-width="13" stroke-linecap="round" fill="none">
+        <path d="M222 362 C240 332 256 300 270 270 C282 244 290 228 295 217"/>
+        <path d="M222 362 C262 342 298 330 333 316"/>
+        <path d="M222 362 C214 340 206 322 193 304"/>
+        <path d="M222 362 C200 388 176 414 150 440"/>
+      </g>
+      <g stroke="none">
+        <circle cx="295" cy="217" r="23"/>
+        <circle cx="333" cy="316" r="23"/>
+        <circle cx="193" cy="304" r="23"/>
+      </g>
+    </g>
+  </g>
+</svg>

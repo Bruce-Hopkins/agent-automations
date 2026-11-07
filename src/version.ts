@@ -2,11 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 /** Replaced with the package version when the Hermes plugin is bundled. */
-declare const __AGENTS_AUTOMATIONS_VERSION__: string | undefined;
+declare const __LEAFI_VERSION__: string | undefined;
 
 /** The package version, read from `package.json` so it is written in one place. */
 export const VERSION: string =
-  typeof __AGENTS_AUTOMATIONS_VERSION__ === 'string' ? __AGENTS_AUTOMATIONS_VERSION__ : readPackageVersion();
+  typeof __LEAFI_VERSION__ === 'string' ? __LEAFI_VERSION__ : readPackageVersion();
 
 function readPackageVersion(): string {
   // dist/version.js and src/version.ts both sit one level below the package root.

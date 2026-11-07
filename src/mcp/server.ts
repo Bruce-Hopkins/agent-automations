@@ -11,7 +11,7 @@ import { VERSION } from '../version';
 export const ASK_TIMEOUT_MS = 5 * 60 * 1000;
 
 export function createMcpServer(context: McpContext): McpServer {
-  const server = new McpServer({ name: 'agents-automations', version: VERSION });
+  const server = new McpServer({ name: 'leafi', version: VERSION });
 
   for (const tool of TOOLS) {
     server.registerTool(

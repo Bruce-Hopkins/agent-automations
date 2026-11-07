@@ -1,8 +1,8 @@
 # Agent instructions
 
-This repo ships a headless CLI, `agents-automations`, that runs a flow of LLM agents.
-The binary documents its own contract: `agents-automations --help`, `agents-automations
-schema` and `agents-automations schema example`.
+This repo ships a headless CLI, `leafi`, that runs a flow of LLM agents.
+The binary documents its own contract: `leafi --help`, `leafi
+schema` and `leafi schema example`.
 
 Read `agents/HOW_TO_DESIGN_YOUR_FLOW.md` before designing a flow. An inefficient flow
 wastes the user's tokens and money, so treat flow design as part of the task:
@@ -13,22 +13,22 @@ design guide shows the shapes a finished flow can take.
 ## Invocation
 
 ```bash
-# Installed by install.sh / install.ps1: the command is ~/.agents-automations/server.mjs,
+# Installed by install.sh / install.ps1: the command is ~/.leafi/server.mjs,
 # which takes every flow command below. Its init is the installer's setup and needs a terminal.
-agents-automations run --graph flow.json --json
+leafi run --graph flow.json --json
 
-# First time on a machine: writes ~/.agents-automations/.env and a starter ./flow.json.
+# First time on a machine: writes ~/.leafi/.env and a starter ./flow.json.
 # Off a terminal it asks nothing; never overwrites an existing file.
 node dist/main.js init --yes
 
 # Always works, no PATH assumptions:
-node /abs/path/to/agents-automations/dist/main.js run --graph flow.json --json
+node /abs/path/to/leafi/dist/main.js run --graph flow.json --json
 
 # Inside the repo (builds first):
 pnpm cli run --graph flow.json --json
 
 # Optional real PATH entry:
-pnpm add -g "link:$PWD"                # then: agents-automations run --graph flow.json
+pnpm add -g "link:$PWD"                # then: leafi run --graph flow.json
 ```
 
 The CLI runs from compiled `dist`, so run `pnpm cli` (which builds) or `pnpm
@@ -106,7 +106,7 @@ is itself an entry node and starts at the same time.
 
 ### The workspace
 
-Each run gets a fresh, empty `~/.agents-automations/workspaces/<runId>/`, shared by
+Each run gets a fresh, empty `~/.leafi/workspaces/<runId>/`, shared by
 every node in that run, including nodes running at the same time. File content
 enters through the run input's text, tool results, or files the run creates.
 `read_file` and `write_file` are confined to that workspace. `run_bash` starts
@@ -126,8 +126,8 @@ environment, which is per-machine state rather than part of the flow:
 # Read-only mailbox access over IMAP with an app password — no OAuth client and
 # no Cloud project. Google only offers an app password once 2-Step Verification
 # is on. Leaving these empty simply means agents get no email tools.
-AGENTS_AUTOMATIONS_EMAIL_ADDRESS=you@gmail.com
-AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD=xxxxxxxxxxxxxxxx
+LEAFI_EMAIL_ADDRESS=you@gmail.com
+LEAFI_EMAIL_APP_PASSWORD=xxxxxxxxxxxxxxxx
 ```
 
 `run` checks credentials before spending tokens. A flow whose nodes need
@@ -138,8 +138,8 @@ read-only: there is no send tool.
 `mcp` gives a node tools from an MCP server, started per node over stdio. By
 default the server is chrome-devtools-mcp driving a headless Chrome, so an `mcp`
 node is a browser node unless you point it elsewhere. Configure its launcher,
-timeout and allowed tools with `AGENTS_AUTOMATIONS_MCP_COMMAND`,
-`AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS` and `AGENTS_AUTOMATIONS_MCP_TOOLS`; to use another
+timeout and allowed tools with `LEAFI_MCP_COMMAND`,
+`LEAFI_MCP_TIMEOUT_MS` and `LEAFI_MCP_TOOLS`; to use another
 server, set the command and its tool names together. A flow requesting `mcp`
 fails pre-flight if the launcher cannot start or offers none of those tools.
 
@@ -336,8 +336,8 @@ node dist/main.js run --graph flow.json --events pretty --diagram
 node dist/main.js run --graph flow.json --no-save
 ```
 
-`--data-dir <path>` and `DATA_DIR` / `AGENTS_AUTOMATIONS_HOME` move run artifacts out
-of the default `~/.agents-automations`. Settings come from `~/.agents-automations/.env`
+`--data-dir <path>` and `DATA_DIR` / `LEAFI_HOME` move run artifacts out
+of the default `~/.leafi`. Settings come from `~/.leafi/.env`
 (the data directory's `.env`) — never a `.env` in the current directory — and
 `--env-file <path>` loads a specific file instead.
 `--no-save` keeps the workspace but writes neither `meta.json` nor
@@ -370,7 +370,7 @@ total.
 the node marked `audience: "person"`, and it is absent when that node did not
 run. Reproduce `personOutput` in full in your reply — do not summarise it and do
 not say only that the run completed. If the deliverable is a file, print its
-absolute path inside `~/.agents-automations/workspaces/<runId>/`. A failed or
+absolute path inside `~/.leafi/workspaces/<runId>/`. A failed or
 cancelled run may have no `personOutput` at all; say so rather than presenting a
 partial node output as the answer.
 
@@ -391,8 +391,8 @@ can be written once for the live stream and the stored log.
 
 ## MCP server
 
-The same engine is exposed over stdio by `agents-automations-mcp` from a clone,
-and by `~/.agents-automations/server.mjs --transport stdio` when installed. All
+The same engine is exposed over stdio by `leafi-mcp` from a clone,
+and by `~/.leafi/server.mjs --transport stdio` when installed. All
 logs go to stderr because stdout carries JSON-RPC.
 
 | Tool | What it returns |
@@ -411,7 +411,7 @@ logs go to stderr because stdout carries JSON-RPC.
 | `list_runs` | Recent runs, newest first (`limit` 20 by default, at most 100). |
 
 The flow tools take exactly one of `flow` (the document) or `flowPath`, and
-`flowPath` works only while `AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS` is true. The
+`flowPath` works only while `LEAFI_ALLOW_FLOW_PATHS` is true. The
 loop is the one under *Delivery*: `validate_flow` and show its `diagram`, state
 the node → model mapping and the minimum, call `start_run` only once the user
 agrees, poll `get_run` until `status` is no longer `running`, then reproduce
@@ -424,15 +424,15 @@ that wrote it. Call `list_flows` before designing a flow the user may already
 have, and run a saved one with `flowPath`.
 
 Dangerous permissions are denied unless the server environment grants the
-matching `AGENTS_AUTOMATIONS_ALLOW_*` setting; `init` offers `web` and `write`
+matching `LEAFI_ALLOW_*` setting; `init` offers `web` and `write`
 on and `bash`, `email` and `mcp` off. When a flow requests a denied one,
 `start_run` asks the person through the client (MCP elicitation), naming the
 nodes; the agent cannot answer. Accepting allows it for that run; "always"
 also saves it to the settings file the server read. A refusal, or a client that
-cannot ask, fails the flow before any model call. `agents-automations settings --allow <ids>` /
+cannot ask, fails the flow before any model call. `leafi settings --allow <ids>` /
 `--deny <ids>` writes those settings without editing the file, to every file in
 use (Hermes's `.env` when the Hermes plugin is installed, and
-`~/.agents-automations/.env`); with neither flag off a terminal it prints them.
+`~/.leafi/.env`); with neither flag off a terminal it prints them.
 Ask the user before granting one; a change made this way needs the server restarted.
 
 To change the server: `src/mcp` is an adapter with no graph logic. It calls the

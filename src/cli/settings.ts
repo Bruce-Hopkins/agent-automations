@@ -12,7 +12,7 @@ import {
 } from './args';
 
 /**
- * `agents-automations settings`: changes the AGENTS_AUTOMATIONS_ALLOW_* permissions in a settings
+ * `leafi settings`: changes the LEAFI_ALLOW_* permissions in a settings
  * file so nobody has to edit it by hand. The file is --env-file, else every
  * one in use: Hermes's when the plugin is installed, and the data directory's
  * when it exists or Hermes has no plugin.

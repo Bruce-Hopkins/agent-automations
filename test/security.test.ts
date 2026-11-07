@@ -24,7 +24,7 @@ const POSIX = process.platform !== 'win32';
 const roots: string[] = [];
 
 function tempRoot(): string {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'agents-automations-security-test-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'leafi-security-test-'));
   roots.push(root);
   return root;
 }
@@ -227,12 +227,12 @@ test('DNS rebinding: the address is checked by the lookup the connection itself 
 
 test('the default env file lives in the data directory, not the current directory', () => {
   const dataDir = tempRoot();
-  fs.writeFileSync(path.join(dataDir, '.env'), 'AGENTS_AUTOMATIONS_SECURITY_TEST=from-data-dir\n');
-  withEnv({ AGENTS_AUTOMATIONS_SECURITY_TEST: undefined }, () => {
+  fs.writeFileSync(path.join(dataDir, '.env'), 'LEAFI_SECURITY_TEST=from-data-dir\n');
+  withEnv({ LEAFI_SECURITY_TEST: undefined }, () => {
     const file = loadEnvironment({ dataDir });
     assert.equal(file, path.join(dataDir, '.env'));
     assert.notEqual(path.dirname(file), process.cwd());
-    assert.equal(process.env.AGENTS_AUTOMATIONS_SECURITY_TEST, 'from-data-dir');
+    assert.equal(process.env.LEAFI_SECURITY_TEST, 'from-data-dir');
   });
 });
 
@@ -260,7 +260,7 @@ test('provider addresses ignore base-URL and gateway variables', () => {
   );
 });
 
-test('LangSmith tracing is switched off unless agents-automations opts in', () => {
+test('LangSmith tracing is switched off unless leafi opts in', () => {
   const switches = { LANGSMITH_TRACING: 'true', LANGCHAIN_TRACING_V2: 'true', LANGCHAIN_TRACING: 'true' };
   withEnv({ ...switches, [TRACING_OPT_IN]: undefined }, () => {
     disableImplicitTracing();
@@ -293,7 +293,7 @@ test('an MCP home open to other accounts is refused', { skip: !POSIX }, async ()
 
 test('the default MCP launcher names an exact version', () => {
   assert.match(DEFAULT_MCP_COMMAND, /chrome-devtools-mcp@\d+\.\d+\.\d+\s/);
-  withEnv({ AGENTS_AUTOMATIONS_MCP_COMMAND: undefined }, () => {
+  withEnv({ LEAFI_MCP_COMMAND: undefined }, () => {
     assert.equal(new RuntimeConfig({ dataDir: tempRoot() }).mcpCommand, DEFAULT_MCP_COMMAND);
   });
 });
@@ -442,24 +442,27 @@ test('closing an MCP client stops everything the server started', { skip: !POSIX
 test('unexpanded ${VAR} placeholders count as unset in every setting', () => {
   withEnv(
     {
-      AGENTS_AUTOMATIONS_EMAIL_ADDRESS: '${AGENTS_AUTOMATIONS_EMAIL_ADDRESS}',
-      AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD: '${AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD}',
-      AGENTS_AUTOMATIONS_MCP_COMMAND: '${AGENTS_AUTOMATIONS_MCP_COMMAND}',
-      AGENTS_AUTOMATIONS_MCP_TOOLS: '${AGENTS_AUTOMATIONS_MCP_TOOLS}',
+      LEAFI_EMAIL_ADDRESS: '${LEAFI_EMAIL_ADDRESS}',
+      LEAFI_EMAIL_APP_PASSWORD: '${LEAFI_EMAIL_APP_PASSWORD}',
+      LEAFI_MCP_COMMAND: '${LEAFI_MCP_COMMAND}',
+      LEAFI_MCP_TOOLS: '${LEAFI_MCP_TOOLS}',
       DATA_DIR: '${DATA_DIR}',
-      AGENTS_AUTOMATIONS_HOME: '${PLUGIN_DATA}',
+      LEAFI_HOME: '${PLUGIN_DATA}',
+      // A home of its own, so a data folder on this machine cannot change the answer.
+      HOME: tempRoot(),
+      USERPROFILE: undefined,
     },
     () => {
       const config = new RuntimeConfig();
       assert.equal(config.emailCredentials(), undefined);
       assert.equal(config.mcpCommand, DEFAULT_MCP_COMMAND);
-      assert.ok(!config.mcpTools.includes('${AGENTS_AUTOMATIONS_MCP_TOOLS}'));
-      assert.equal(config.dataDir, path.join(os.homedir(), '.agents-automations'));
+      assert.ok(!config.mcpTools.includes('${LEAFI_MCP_TOOLS}'));
+      assert.equal(config.dataDir, path.join(os.homedir(), '.leafi'));
     },
   );
 
   withEnv(
-    { AGENTS_AUTOMATIONS_EMAIL_ADDRESS: 'me@example.com', AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD: 'app-pass', AGENTS_AUTOMATIONS_EMAIL_IMAP_HOST: '${AGENTS_AUTOMATIONS_EMAIL_IMAP_HOST}' },
+    { LEAFI_EMAIL_ADDRESS: 'me@example.com', LEAFI_EMAIL_APP_PASSWORD: 'app-pass', LEAFI_EMAIL_IMAP_HOST: '${LEAFI_EMAIL_IMAP_HOST}' },
     () => {
       assert.equal(new RuntimeConfig({ dataDir: tempRoot() }).emailCredentials()?.imapHost, 'imap.gmail.com');
     },

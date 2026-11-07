@@ -14,7 +14,7 @@ import {
   PERMISSIONS,
   PERMISSIONS_QUESTION,
   permissionChanges,
-  readIfPresent,
+  readSettingsFile,
   SETTINGS_URL,
   writePrivate,
   type SettingsFile,
@@ -27,11 +27,11 @@ export interface InitPrompts {
   checklist(question: string, items: readonly ChecklistItem[]): Promise<boolean[]>;
 }
 
-export const AGENTS_QUESTION = 'Where should agents-automations be installed?';
+export const AGENTS_QUESTION = 'Where should leafi be installed?';
 
 export interface InitResult {
   envFile: string;
-  /** What was written: key names without their values, and `AGENTS_AUTOMATIONS_ALLOW_*=<value>`. */
+  /** What was written: key names without their values, and `LEAFI_ALLOW_*=<value>`. */
   saved: string[];
   /** Whether the file now holds at least one provider key. */
   keyConfigured: boolean;
@@ -46,7 +46,7 @@ export interface SetupOptions {
 
 /**
  * The server's `init`, which the installer runs. It asks which of the agents
- * on this machine to install agents-automations into, then for one provider
+ * on this machine to install leafi into, then for one provider
  * key and the permissions, saves them where those agents' servers read them,
  * and only then installs, so a server starts with its key. Nothing is
  * installed into an agent that was not ticked, and without a terminal nothing
@@ -57,7 +57,7 @@ export async function runSetup(options: SetupOptions): Promise<number> {
   const server = serverScript();
   if (process.stdin.isTTY !== true || process.stderr.isTTY !== true) {
     process.stderr.write(
-      'init asks where to install agents-automations, and for an API key with the input hidden, so it needs a\n' +
+      'init asks where to install leafi, and for an API key with the input hidden, so it needs a\n' +
         'terminal. Nothing was installed or changed. Run it in a terminal:\n' +
         `  node "${server}" init\n`,
     );
@@ -98,7 +98,7 @@ export async function setup(
 /**
  * Where the settings go: Hermes's `.env` for the Hermes plugin, and always the
  * data directory's, which every other agent's server and the
- * agents-automations command read. Without it, a person who ticked only
+ * leafi command read. Without it, a person who ticked only
  * Hermes could not `run` a flow from the command.
  */
 function settingsFilesFor(chosen: readonly Agent[], options: SetupOptions): SettingsFile[] {
@@ -109,7 +109,7 @@ function settingsFilesFor(chosen: readonly Agent[], options: SetupOptions): Sett
 }
 
 /**
- * Asks for one provider key and the AGENTS_AUTOMATIONS_ALLOW_* policy once,
+ * Asks for one provider key and the LEAFI_ALLOW_* policy once,
  * and writes to each file only the answers that change what its server
  * reads; every other line is kept. A key counts as set only when every file
  * has it. A permission no file sets is offered as it recommends (see
@@ -120,8 +120,8 @@ function settingsFilesFor(chosen: readonly Agent[], options: SetupOptions): Sett
 export async function initSettings(files: readonly SettingsFile[], prompts: InitPrompts): Promise<InitResult[]> {
   const read = await Promise.all(
     files.map(async (file) => {
-      const existing = await readIfPresent(file.envFile);
-      return { file, existing, current: parse(existing ?? '') };
+      const { existing, renamed } = await readSettingsFile(file.envFile);
+      return { file, existing, renamed, current: parse(existing ?? '') };
     }),
   );
   const everywhere = (name: string) => read.every(({ current }) => isSet(current, name));
@@ -148,19 +148,19 @@ export async function initSettings(files: readonly SettingsFile[], prompts: Init
   const allowed = new Map(PERMISSIONS.map(({ name }, index) => [name, ticked[index] ?? false]));
 
   const results: InitResult[] = [];
-  for (const { file, existing, current } of read) {
+  for (const { file, existing, renamed, current } of read) {
     const values: Record<string, string> = key.length > 0 ? { [provider.envKey]: key } : {};
     Object.assign(values, permissionChanges(current, allowed));
     const create = existing === undefined && !file.hermes;
-    if (Object.keys(values).length > 0 || create) {
+    if (Object.keys(values).length > 0 || create || renamed) {
       const content = create
-        ? setEnvValues(`# agents-automations settings. Every setting: ${SETTINGS_URL}\n`, values)
-        : setEnvValues(existing ?? '', values, file.hermes ? 'agents-automations plugin' : 'agents-automations');
+        ? setEnvValues(`# leafi settings. Every setting: ${SETTINGS_URL}\n`, values)
+        : setEnvValues(existing ?? '', values, file.hermes ? 'leafi plugin' : 'leafi');
       await writePrivate(file.envFile, content);
     }
     results.push({
       envFile: file.envFile,
-      saved: Object.keys(values).map((name) => (name.startsWith('AGENTS_AUTOMATIONS_ALLOW_') ? `${name}=${values[name]}` : name)),
+      saved: Object.keys(values).map((name) => (name.startsWith('LEAFI_ALLOW_') ? `${name}=${values[name]}` : name)),
       keyConfigured: key.length > 0 || PROVIDER_CATALOG.some((entry) => isSet(current, entry.envKey)),
       mailboxMissing: mailboxMissing(current, allowed),
     });
@@ -170,7 +170,7 @@ export async function initSettings(files: readonly SettingsFile[], prompts: Init
 
 /**
  * This server's own file, for the agents' configs and the lines that tell a
- * person how to start it. Run as the agents-automations command, argv[1] is
+ * person how to start it. Run as the leafi command, argv[1] is
  * the link, so it is followed to the server.mjs the link names. Only that
  * link is followed: a folder link in the path stays as the person wrote it.
  */
@@ -196,7 +196,7 @@ function summary(results: readonly InitResult[], chosen: readonly Agent[], insta
   const noMailbox = results.filter((result) => result.mailboxMissing).map((result) => result.envFile);
   if (noMailbox.length > 0) {
     lines.push(
-      `Email is allowed, but ${noMailbox.join(' and ')} ${noMailbox.length > 1 ? 'have' : 'has'} no AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD yet: ${SETTINGS_URL}`,
+      `Email is allowed, but ${noMailbox.join(' and ')} ${noMailbox.length > 1 ? 'have' : 'has'} no LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD yet: ${SETTINGS_URL}`,
     );
   }
 

@@ -266,7 +266,7 @@ export interface EmailCredentials {
  * whether the password actually works is answered by a live login at run time.
  */
 export interface EmailStatus {
-  /** `AGENTS_AUTOMATIONS_EMAIL_ADDRESS` and `AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD` are both present. */
+  /** `LEAFI_EMAIL_ADDRESS` and `LEAFI_EMAIL_APP_PASSWORD` are both present. */
   configured: boolean;
   /** The mailbox the agent will read, when configured. */
   address?: string;

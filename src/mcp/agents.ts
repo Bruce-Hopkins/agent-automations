@@ -2,14 +2,15 @@ import { spawn, type ChildProcess, type SpawnOptions } from 'node:child_process'
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { LEGACY_SERVER_NAME } from '../config/legacy-names';
 import { HERMES_PLUGIN_NAME } from './hermes-home';
 import { readIfPresent, writePrivate } from './settings';
 
 /** The name the server is added under, in every agent. */
-export const SERVER_NAME = 'agents-automations';
+export const SERVER_NAME = 'leafi';
 
-/** Where Hermes installs the plugin from, unless AGENTS_AUTOMATIONS_PLUGIN_SOURCE says otherwise. */
-export const DEFAULT_PLUGIN_SOURCE = 'Bruce-Hopkins/agent-automations/hermes-plugin';
+/** Where Hermes installs the plugin from, unless LEAFI_PLUGIN_SOURCE says otherwise. */
+export const DEFAULT_PLUGIN_SOURCE = 'Bruce-Hopkins/leafi/hermes-plugin';
 
 export type AgentId = 'hermes' | 'claude-code' | 'claude-desktop' | 'cursor';
 
@@ -19,7 +20,7 @@ export interface InstallResult {
   line: string;
 }
 
-/** An agent found on this machine, which init offers to install agents-automations into. */
+/** An agent found on this machine, which init offers to install leafi into. */
 export interface Agent {
   id: AgentId;
   name: string;
@@ -36,7 +37,7 @@ export interface Agent {
  * their command is on the PATH, Claude Desktop and Cursor when their settings
  * folder exists. Nothing is changed.
  */
-export async function findAgents(pluginSource = process.env.AGENTS_AUTOMATIONS_PLUGIN_SOURCE?.trim() || DEFAULT_PLUGIN_SOURCE): Promise<Agent[]> {
+export async function findAgents(pluginSource = process.env.LEAFI_PLUGIN_SOURCE?.trim() || DEFAULT_PLUGIN_SOURCE): Promise<Agent[]> {
   const agents: Agent[] = [];
   const hermes = findCommand('hermes');
   if (hermes) {
@@ -97,7 +98,7 @@ function hermesAgent(command: string, status: PluginStatus, source: string): Age
           : 'installs and enables the Hermes plugin',
     async install() {
       if (status === 'enabled') {
-        return { ok: true, line: 'Hermes: the plugin was already installed and enabled.' };
+        return { ok: true, line: `Hermes: the plugin was already installed and enabled.${await legacyHermesNote(command)}` };
       }
       const args = status === 'missing' ? ['plugins', 'install', source, '--enable'] : ['plugins', 'enable', HERMES_PLUGIN_NAME];
       process.stderr.write(`\nRunning: hermes ${args.join(' ')}\n\n`);
@@ -111,15 +112,29 @@ function hermesAgent(command: string, status: PluginStatus, source: string): Age
       }
       return {
         ok: true,
-        line: status === 'missing' ? `Hermes: installed and enabled the plugin from ${source}.` : 'Hermes: enabled the plugin.',
+        line:
+          (status === 'missing' ? `Hermes: installed and enabled the plugin from ${source}.` : 'Hermes: enabled the plugin.') +
+          (await legacyHermesNote(command)),
       };
     },
   };
 }
 
+/**
+ * A note when the plugin from before the rename is still installed, which would
+ * give Hermes the same tools twice. It is not removed here: its data folder
+ * holds the person's saved flows and runs.
+ */
+async function legacyHermesNote(command: string): Promise<string> {
+  if ((await hermesStatus(command, LEGACY_SERVER_NAME)) === 'missing') {
+    return '';
+  }
+  return ` The plugin's old version, ${LEGACY_SERVER_NAME}, is still installed; once you have copied any flows you want from it, remove it with "hermes plugins remove ${LEGACY_SERVER_NAME}".`;
+}
+
 /** Reads `hermes plugins show`, which fails for a plugin Hermes does not have. */
-async function hermesStatus(command: string): Promise<PluginStatus> {
-  const { code, output } = await run(command, ['plugins', 'show', HERMES_PLUGIN_NAME], 'pipe');
+async function hermesStatus(command: string, name = HERMES_PLUGIN_NAME): Promise<PluginStatus> {
+  const { code, output } = await run(command, ['plugins', 'show', name], 'pipe');
   if (code !== 0) {
     return 'missing';
   }
@@ -131,14 +146,19 @@ async function hermesStatus(command: string): Promise<PluginStatus> {
 /** Claude Code adds servers with its own command, at user scope, so it works in every project. */
 function claudeCodeAgent(command: string): Agent {
   const added = claudeCodeHasServer();
+  const legacy = claudeCodeHasServer(LEGACY_SERVER_NAME);
   return {
     id: 'claude-code',
     name: 'Claude Code',
     readsHermesEnv: false,
     detail: added ? 'the server is already added' : 'adds the server with "claude mcp add", for all projects',
     async install(server) {
+      // The entry from before the rename points at the old server file, which
+      // the installer moved, so it is replaced rather than left broken.
+      const removed = legacy && (await run(command, ['mcp', 'remove', '--scope', 'user', LEGACY_SERVER_NAME], 'pipe')).code === 0;
+      const replaced = removed ? ` and removed the old ${LEGACY_SERVER_NAME} entry` : '';
       if (added) {
-        return { ok: true, line: 'Claude Code: the server was already added.' };
+        return { ok: true, line: `Claude Code: the server was already added${replaced}.` };
       }
       const args = ['mcp', 'add', '--scope', 'user', SERVER_NAME, '--', 'node', server, '--transport', 'stdio'];
       const { code, output } = await run(command, args, 'pipe');
@@ -148,17 +168,17 @@ function claudeCodeAgent(command: string): Agent {
           line: `Claude Code: "claude ${args.join(' ')}" failed (exit ${code})${output.trim() ? `: ${output.trim().split('\n').pop()}` : ''}`,
         };
       }
-      return { ok: true, line: 'Claude Code: added the server for all projects.' };
+      return { ok: true, line: `Claude Code: added the server for all projects${replaced}.` };
     },
   };
 }
 
 /** Whether Claude Code's user settings already list the server. A file it cannot read counts as no. */
-function claudeCodeHasServer(): boolean {
+function claudeCodeHasServer(name = SERVER_NAME): boolean {
   const dir = process.env.CLAUDE_CONFIG_DIR?.trim() || os.homedir();
   try {
     const config: unknown = JSON.parse(fs.readFileSync(path.join(dir, '.claude.json'), 'utf8'));
-    return isObject(config) && isObject(config.mcpServers) && SERVER_NAME in config.mcpServers;
+    return isObject(config) && isObject(config.mcpServers) && name in config.mcpServers;
   } catch {
     return false;
   }
@@ -204,7 +224,11 @@ function configFileAgent(app: ConfigFileApp, config: McpConfig): Agent {
     id: app.id,
     name: app.name,
     readsHermesEnv: false,
-    detail: config.servers?.[SERVER_NAME] ? `the server is already in ${shown}` : `adds the server to ${shown}`,
+    detail: config.servers?.[LEGACY_SERVER_NAME]
+      ? `replaces the old ${LEGACY_SERVER_NAME} entry in ${shown}`
+      : config.servers?.[SERVER_NAME]
+        ? `the server is already in ${shown}`
+        : `adds the server to ${shown}`,
     async install(server) {
       try {
         const change = await addToMcpConfig(app.file, mcpEntry(server));
@@ -258,12 +282,15 @@ export async function addToMcpConfig(file: string, entry: object): Promise<'adde
     throw new Error('its "mcpServers" is not an object');
   }
   const before = servers[SERVER_NAME];
-  if (JSON.stringify(before) === JSON.stringify(entry)) {
+  // The entry from before the rename points at the old server file, which the
+  // installer moved, so it is replaced rather than left broken.
+  const { [LEGACY_SERVER_NAME]: legacy, ...rest } = servers;
+  if (legacy === undefined && JSON.stringify(before) === JSON.stringify(entry)) {
     return 'unchanged';
   }
-  config.mcpServers = { ...servers, [SERVER_NAME]: entry };
+  config.mcpServers = { ...rest, [SERVER_NAME]: entry };
   await writePrivate(file, `${JSON.stringify(config, null, 2)}\n`);
-  return before === undefined ? 'added' : 'updated';
+  return before === undefined && legacy === undefined ? 'added' : 'updated';
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {

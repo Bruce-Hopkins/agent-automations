@@ -18,7 +18,7 @@ const POSIX = process.platform !== 'win32';
 const tempDirs: string[] = [];
 
 function tempDir(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'agents-automations-library-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'leafi-library-'));
   tempDirs.push(dir);
   return dir;
 }
@@ -129,7 +129,7 @@ test('the question names each permission and its nodes, and accepting allows the
 
   const granted = await requestPermissions(graph, { policy, settingsFile, logger: quietLogger }, ask);
 
-  assert.deepEqual([...granted].sort(), ['AGENTS_AUTOMATIONS_ALLOW_BASH', 'AGENTS_AUTOMATIONS_ALLOW_MCP']);
+  assert.deepEqual([...granted].sort(), ['LEAFI_ALLOW_BASH', 'LEAFI_ALLOW_MCP']);
   const message = ask.questions[0]?.message ?? '';
   assert.match(message, /- bash: run shell commands .*Nodes: "A", "B"\./);
   assert.match(message, /- mcp: .*Nodes: "B"\./);
@@ -149,7 +149,7 @@ test('"always" saves the permission to the settings file and allows it for the r
   assert.equal(policy.allowBash, true);
   const saved = fs.readFileSync(settingsFile, 'utf8');
   assert.match(saved, /^OPENAI_API_KEY=sk-test$/m);
-  assert.match(saved, /^AGENTS_AUTOMATIONS_ALLOW_BASH=true$/m);
+  assert.match(saved, /^LEAFI_ALLOW_BASH=true$/m);
 });
 
 test('a server that read no settings file offers no "always", and says how to stop being asked', async () => {
@@ -218,7 +218,7 @@ async function connect(dataDir: string, answer?: ElicitResult) {
     args: [path.resolve('dist/mcp/main.js'), '--transport', 'stdio', '--data-dir', dataDir],
     stderr: 'pipe',
   });
-  const client = new Client({ name: 'agents-automations-test', version: '1.0.0' }, { capabilities: answer ? { elicitation: {} } : {} });
+  const client = new Client({ name: 'leafi-test', version: '1.0.0' }, { capabilities: answer ? { elicitation: {} } : {} });
   const questions: string[] = [];
   if (answer) {
     client.setRequestHandler(ElicitRequestSchema, async (request) => {
@@ -248,7 +248,7 @@ test('over MCP, start_run asks the person, saves "always", and saves the flow fo
     assert.match(textOf(started), /No API key is configured/);
     assert.equal(questions.length, 1);
     assert.match(questions[0] ?? '', /bash: run shell commands/);
-    assert.match(fs.readFileSync(path.join(dataDir, '.env'), 'utf8'), /^AGENTS_AUTOMATIONS_ALLOW_BASH=true$/m);
+    assert.match(fs.readFileSync(path.join(dataDir, '.env'), 'utf8'), /^LEAFI_ALLOW_BASH=true$/m);
 
     // Allowed for the rest of the session: no second question.
     await client.callTool({ name: 'start_run', arguments: { flow: document } });

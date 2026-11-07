@@ -23,7 +23,7 @@ export async function mcpPreflight(
   }
 
   const labels = needing.map((node) => `"${node.label}"`).join(', ');
-  const repair = `Set AGENTS_AUTOMATIONS_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${options.command}).`;
+  const repair = `Set LEAFI_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${options.command}).`;
 
   try {
     const tools = await listMcpTools({
@@ -35,7 +35,7 @@ export async function mcpPreflight(
     if (!options.allowlist.some((name) => offered.has(name))) {
       const available = tools.map((tool) => tool.name).join(', ');
       return [
-        `${labels} need the MCP server, but it offers none of the tools they may use (${options.allowlist.join(', ')}). Set AGENTS_AUTOMATIONS_MCP_TOOLS to a subset of: ${available}.`,
+        `${labels} need the MCP server, but it offers none of the tools they may use (${options.allowlist.join(', ')}). Set LEAFI_MCP_TOOLS to a subset of: ${available}.`,
       ];
     }
     return [];

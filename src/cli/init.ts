@@ -140,8 +140,8 @@ function summary(options: {
     lines.push('Next:');
   }
   lines.push(
-    `  agents-automations graph --graph ${FLOW_FILE}`,
-    `  agents-automations run --graph ${FLOW_FILE} --input "What is known about small language models for code?"`,
+    `  leafi graph --graph ${FLOW_FILE}`,
+    `  leafi run --graph ${FLOW_FILE} --input "What is known about small language models for code?"`,
     '',
   );
   return lines.join('\n');

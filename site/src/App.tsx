@@ -46,8 +46,8 @@ function Nav() {
     <header className={`nav${onHero ? " on-hero" : ""}`}>
       <div className="wrap">
         <a className="brand" href="#top">
-          <img src={`${BASE}favicon.svg`} alt="" width={26} height={26} />
-          agents-automations
+          <img src={`${BASE}leaf.svg`} alt="" width={28} height={28} />
+          leafi
         </a>
         <nav className="nav-links" aria-label="Main">
           <a className="hide-sm" href="#goals">Goals</a>

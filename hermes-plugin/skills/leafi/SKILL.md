@@ -1,11 +1,11 @@
 ---
-name: agents-automations
-description: Designing, validating, drawing and running agents-automations flows — how many nodes, which model tier per node, how to wire inputs, branches and fan-out, and how to run one through the agents-automations MCP tools.
+name: leafi
+description: Designing, validating, drawing and running leafi flows — how many nodes, which model tier per node, how to wire inputs, branches and fan-out, and how to run one through the leafi MCP tools.
 ---
 
-# Using agents-automations
+# Using leafi
 
-`agents-automations` runs a flow of LLM agents. A flow is a JSON document
+`leafi` runs a flow of LLM agents. A flow is a JSON document
 (`{ name, nodes, edges }`), and the runtime is what executes it — the tools here
 validate, draw and run the document; they do not author it for you.
 
@@ -63,14 +63,14 @@ If a flow needs a permission that is turned off (`bash`, `email_read` and
 `mcp` are off by default), `start_run` asks the user for it directly, and
 Hermes shows that as an approval. If they decline, the error names the
 permission: explain why the flow needs it, and that they can allow it with
-`node ~/.hermes/plugins/agents-automations/dist/server.mjs settings --allow <permission>`
+`node ~/.hermes/plugins/leafi/dist/server.mjs settings --allow <permission>`
 and a new Hermes session. Do not try to work around the policy.
 
 ## Browser nodes
 
 The `mcp` permission gives a node the tools of one MCP server. By default that
 server is chrome-devtools-mcp driving a headless Chrome, so an `mcp` node is a
-browser node unless `AGENTS_AUTOMATIONS_MCP_COMMAND` names another server.
+browser node unless `LEAFI_MCP_COMMAND` names another server.
 
 - Prefer `evaluate_script` returning a small array over `take_snapshot`. A
   snapshot can be tens of thousands of tokens and exhaust the node's budget.

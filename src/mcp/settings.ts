@@ -4,13 +4,14 @@ import path from 'node:path';
 import { parse } from 'dotenv';
 import { UsageError } from '../app/usage-error';
 import { setEnvValues } from '../config/env-file';
+import { renameLegacyEnvKeys } from '../config/legacy-names';
 import { askChecklist } from '../config/terminal-prompt';
 import { resolveDataDir } from '../config/runtime-config';
 import { PRIVATE_DIR_MODE, PRIVATE_FILE_MODE } from '../runtime/run-store';
 import { hermesEnvFile, hermesPluginInstalled } from './hermes-home';
 import { ALLOW_DEFAULTS, type AllowSetting } from './policy';
 
-export const SETTINGS_URL = 'https://github.com/Bruce-Hopkins/agent-automations/blob/main/.env.example';
+export const SETTINGS_URL = 'https://github.com/Bruce-Hopkins/leafi/blob/main/.env.example';
 
 export const PERMISSIONS_QUESTION = 'Which permissions may flows use?';
 
@@ -35,16 +36,16 @@ function permission(id: string, name: AllowSetting, about: string, offered: bool
 }
 
 /**
- * Every AGENTS_AUTOMATIONS_ALLOW_* setting, in checklist order. The mailbox login and MCP
+ * Every LEAFI_ALLOW_* setting, in checklist order. The mailbox login and MCP
  * server launcher need more than a tick, so they are left to the README.
  */
 export const PERMISSIONS: readonly Permission[] = [
-  permission('web', 'AGENTS_AUTOMATIONS_ALLOW_WEB', 'fetch web pages (web_fetch)', true),
-  permission('write', 'AGENTS_AUTOMATIONS_ALLOW_WRITE', 'write files in the run workspace (write_file)', true),
-  permission('bash', 'AGENTS_AUTOMATIONS_ALLOW_BASH', 'run shell commands (run_bash): any command you can', false),
-  permission('email', 'AGENTS_AUTOMATIONS_ALLOW_EMAIL', 'read your mailbox, read-only (needs a mailbox login)', false),
-  permission('mcp', 'AGENTS_AUTOMATIONS_ALLOW_MCP', 'tools from an MCP server (default: headless Chrome)', false),
-  permission('flow-paths', 'AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS', 'load a flow from a file path, not only inline JSON', true),
+  permission('web', 'LEAFI_ALLOW_WEB', 'fetch web pages (web_fetch)', true),
+  permission('write', 'LEAFI_ALLOW_WRITE', 'write files in the run workspace (write_file)', true),
+  permission('bash', 'LEAFI_ALLOW_BASH', 'run shell commands (run_bash): any command you can', false),
+  permission('email', 'LEAFI_ALLOW_EMAIL', 'read your mailbox, read-only (needs a mailbox login)', false),
+  permission('mcp', 'LEAFI_ALLOW_MCP', 'tools from an MCP server (default: headless Chrome)', false),
+  permission('flow-paths', 'LEAFI_ALLOW_FLOW_PATHS', 'load a flow from a file path, not only inline JSON', true),
 ];
 
 export type Permissions = ReadonlyMap<AllowSetting, boolean>;
@@ -56,7 +57,7 @@ export function isSet(values: EnvValues, name: string): boolean {
   return Boolean(values[name]?.trim());
 }
 
-/** The same reading the server gives a AGENTS_AUTOMATIONS_ALLOW_* value. */
+/** The same reading the server gives a LEAFI_ALLOW_* value. */
 export function isTrue(value: string | undefined): boolean {
   const raw = value?.trim().toLowerCase();
   return raw === '1' || raw === 'true' || raw === 'yes';
@@ -83,7 +84,7 @@ export function permissionChanges(values: EnvValues, wanted: Permissions): Recor
 
 /** Email is allowed, but the file has no mailbox login for it to use. */
 export function mailboxMissing(values: EnvValues, wanted: Permissions): boolean {
-  return wanted.get('AGENTS_AUTOMATIONS_ALLOW_EMAIL') === true && !(isSet(values, 'AGENTS_AUTOMATIONS_EMAIL_ADDRESS') && isSet(values, 'AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD'));
+  return wanted.get('LEAFI_ALLOW_EMAIL') === true && !(isSet(values, 'LEAFI_EMAIL_ADDRESS') && isSet(values, 'LEAFI_EMAIL_APP_PASSWORD'));
 }
 
 /** Parses an `--allow` or `--deny` value: comma-separated permission ids, or `all`. */
@@ -152,12 +153,12 @@ export function hermesSettingsFile(): SettingsFile {
 
 /**
  * The data directory's `.env`, which the server reads for Claude Code, Cursor
- * and every other MCP client, and the agents-automations command reads too.
+ * and every other MCP client, and the leafi command reads too.
  */
 export function dataSettingsFile(dataDir?: string): SettingsFile {
   return {
     envFile: path.join(resolveDataDir(dataDir), '.env'),
-    reader: 'the agents-automations command and the MCP server for your other clients',
+    reader: 'the leafi command and the MCP server for your other clients',
     hermes: false,
   };
 }
@@ -180,7 +181,7 @@ export interface SettingsResult {
   reader?: string;
   /** Each permission by id, as the server will read it. */
   permissions: Record<string, boolean>;
-  /** What was written, as `AGENTS_AUTOMATIONS_ALLOW_*=<value>`. */
+  /** What was written, as `LEAFI_ALLOW_*=<value>`. */
   saved: string[];
   mailboxMissing: boolean;
 }
@@ -196,17 +197,17 @@ export async function changePermissions(
 ): Promise<SettingsResult[]> {
   const read = await Promise.all(
     files.map(async (file) => {
-      const existing = await readIfPresent(file.envFile);
-      return { file, existing, values: parse(existing ?? '') };
+      const { existing, renamed } = await readSettingsFile(file.envFile);
+      return { file, existing, renamed, values: parse(existing ?? '') };
     }),
   );
   const wanted = await choose(read.map(({ values }) => serverReads(values)));
   return Promise.all(
-    read.map(async ({ file, existing, values }, index) => {
+    read.map(async ({ file, existing, renamed, values }, index) => {
       const want = wanted[index] ?? serverReads(values);
       const changes = permissionChanges(values, want);
-      if (Object.keys(changes).length > 0) {
-        await writePrivate(file.envFile, setEnvValues(existing ?? '', changes, 'agents-automations permissions'));
+      if (Object.keys(changes).length > 0 || renamed) {
+        await writePrivate(file.envFile, setEnvValues(existing ?? '', changes, 'leafi permissions'));
       }
       return {
         envFile: file.envFile,
@@ -219,6 +220,17 @@ export async function changePermissions(
   );
 }
 
+/**
+ * A settings file's text with names from before the rename (`AGENTS_AUTOMATIONS_*`)
+ * already changed to `LEAFI_*`, and whether any were, so the caller saves it
+ * even when nothing else changes. Undefined text for a missing file.
+ */
+export async function readSettingsFile(file: string): Promise<{ existing: string | undefined; renamed: boolean }> {
+  const raw = await readIfPresent(file);
+  const existing = raw === undefined ? undefined : renameLegacyEnvKeys(raw);
+  return { existing, renamed: existing !== raw };
+}
+
 export interface SettingsOptions {
   files: readonly SettingsFile[];
   allow?: string;
@@ -227,7 +239,7 @@ export interface SettingsOptions {
 }
 
 /**
- * The `settings` command, shared by `agents-automations` and the MCP server.
+ * The `settings` command, shared by `leafi` and the MCP server.
  * With `--allow`/`--deny` it changes the named permissions in every file and
  * asks nothing, `--deny` winning over `--allow`. Otherwise, in a terminal, it
  * shows one checklist, ticked where every file allows the permission, and
@@ -299,7 +311,7 @@ function settingsSummary(results: readonly SettingsResult[], couldChange: boolea
   }
   for (const result of results) {
     if (result.mailboxMissing) {
-      lines.push(`Email is allowed, but ${result.envFile} has no AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD yet: ${SETTINGS_URL}`);
+      lines.push(`Email is allowed, but ${result.envFile} has no LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD yet: ${SETTINGS_URL}`);
     }
   }
   if (results.some((result) => result.saved.length > 0)) {

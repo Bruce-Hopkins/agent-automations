@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
-export const REPO = "https://github.com/Bruce-Hopkins/agent-automations";
-export const RAW = "https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main";
+export const REPO = "https://github.com/Bruce-Hopkins/leafi";
+export const RAW = "https://raw.githubusercontent.com/Bruce-Hopkins/leafi/main";
 
 const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 

@@ -24,7 +24,7 @@ export async function runRuns(parsed: ParsedArgs, context: CommandContext): Prom
 
   if (action === 'show') {
     if (!id) {
-      throw new UsageError('"agents-automations runs show" needs a run id.');
+      throw new UsageError('"leafi runs show" needs a run id.');
     }
     const run = await context.runs.getRun(id);
     if (!run) {

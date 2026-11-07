@@ -31,7 +31,7 @@ import { runValidate } from './validate';
 
 /**
  * The commands that work on flows. The installed server.mjs hands these to the
- * CLI, so the one downloaded file is also the agents-automations command;
+ * CLI, so the one downloaded file is also the leafi command;
  * init and settings stay the server's own.
  */
 export const FLOW_COMMANDS = ['validate', 'schema', 'run', 'graph', 'providers', 'runs'] as const;

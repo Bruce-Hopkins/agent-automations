@@ -55,6 +55,6 @@ test('the refusal names the exact command that allows every denied permission', 
 
 test('a permission granted for one run lets the flow through without changing the policy', () => {
   const policy = { ...DENY_ALL };
-  assert.doesNotThrow(() => assertFlowAllowed(graphWith({ bash: true }), policy, new Set(['AGENTS_AUTOMATIONS_ALLOW_BASH'] as const)));
+  assert.doesNotThrow(() => assertFlowAllowed(graphWith({ bash: true }), policy, new Set(['LEAFI_ALLOW_BASH'] as const)));
   assert.equal(policy.allowBash, false);
 });

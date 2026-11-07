@@ -1,14 +1,14 @@
 /* The hero is always dark, like the sketch it comes from; the rest of the
    page follows the visitor's theme. */
 .hero {
-  --h-bg: #07080b;
-  --h-ink: #f3f3ef;
-  --h-ink-2: #aeb0b8;
-  --h-ink-3: #6e717b;
-  --h-ink-sub: #8f929c;
-  --h-line: #e6e8f0;
-  --h-accent: #8ea5ff;
-  --h-accent-hot: #d3dcff;
+  --h-bg: #0b1020;
+  --h-ink: #f3f5f9;
+  --h-ink-2: #aeb6c6;
+  --h-ink-3: #6f7890;
+  --h-ink-sub: #8d96ab;
+  --h-line: #e3e8f1;
+  --h-accent: #10b981;
+  --h-accent-hot: #a3e635;
   --h-dot: rgba(255, 255, 255, .065);
   --h-panel: rgba(255, 255, 255, .04);
   --h-panel-line: rgba(255, 255, 255, .12);
@@ -40,7 +40,7 @@
   inset: -14% -4%;
   z-index: -1;
   background:
-    radial-gradient(ellipse 46% 36% at 50% 16%, rgba(142, 165, 255, .17), transparent 70%),
+    radial-gradient(ellipse 46% 36% at 50% 16%, rgba(16, 185, 129, .16), transparent 70%),
     radial-gradient(var(--h-dot) 1.2px, transparent 1.4px) 0 0 / 22px 22px;
 }
 .ambient { position: absolute; inset: 0; width: 100%; height: 100%; filter: blur(1.4px); opacity: 0; animation: fade-in 2.4s ease 1.4s forwards; }
@@ -93,7 +93,6 @@
 .node-ring { fill: var(--h-bg); stroke: var(--h-line); stroke-width: 2.4; transition: stroke .2s; }
 .node-dot { fill: var(--h-ink-2); transition: fill .2s; }
 .node.is-person .node-ring { stroke: var(--h-accent); }
-.node.is-person .node-dot { fill: var(--h-accent); }
 .node:hover .node-ring { stroke: var(--h-accent); }
 .node:hover .node-dot { fill: var(--h-accent-hot); }
 .node-ripple { fill: none; stroke: var(--h-accent); stroke-width: 2; opacity: 0; }
@@ -155,9 +154,13 @@
   background: var(--h-panel); border: 1px solid var(--h-panel-line);
   padding: 7px 12px; border-radius: 999px; margin-bottom: 20px;
 }
-.pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: #6cc897; box-shadow: 0 0 0 3px rgba(108, 200, 151, .22); }
+.pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--h-accent-hot); box-shadow: 0 0 0 3px rgba(163, 230, 53, .22); }
 .hero h1 { font-size: clamp(34px, 5.2vw, 60px); font-weight: 700; max-width: 20ch; margin: 0 auto; }
 .hero h1 em { font-style: normal; color: var(--h-accent); }
+/* The logo's leaf gradient, where the browser can clip a background to text. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero h1 em { background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+}
 .hero .install-note { font-size: 14px; color: var(--h-ink-3); margin: 12px auto 0; max-width: 600px; }
 .hero .cta-row { justify-content: center; }
 .hero .btn.primary { background: var(--h-ink); border-color: var(--h-ink); color: var(--h-bg); }
@@ -168,7 +171,7 @@
 /* ---------- Install box ---------- */
 .install {
   margin: 28px auto 0; max-width: 640px; text-align: left;
-  background: #0d0f13; border: 1px solid var(--h-panel-line); border-radius: var(--radius);
+  background: #080c19; border: 1px solid var(--h-panel-line); border-radius: var(--radius);
   overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
 }
 .tabs { display: flex; gap: 2px; padding: 6px 6px 0; border-bottom: 1px solid var(--h-panel-line); overflow-x: auto; }
@@ -191,4 +194,4 @@
 }
 .copy:hover { color: var(--h-ink); border-color: var(--h-ink-3); }
 .copy svg { width: 16px; height: 16px; }
-.copy.done { color: #7fd1a4; }
+.copy.done { color: var(--h-accent-hot); }

@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 /** The folder name Hermes installs this plugin under. */
-export const HERMES_PLUGIN_NAME = 'agents-automations';
+export const HERMES_PLUGIN_NAME = 'leafi';
 
 /** Hermes's home folder: `$HERMES_HOME` (a profile's folder), else its platform default. */
 export function hermesHome(): string {

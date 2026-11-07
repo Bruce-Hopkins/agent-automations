@@ -20,7 +20,7 @@ export const COMPLETE_TASK_TOOL = 'complete_task';
 
 const DENIED_COMMANDS = new Set(['sudo', 'su', 'doas']);
 const SHELL_SEPARATORS = /[\s;&|(){}<>`$=]+/;
-const WEB_FETCH_USER_AGENT = `agents-automations/${VERSION} (local agent runtime)`;
+const WEB_FETCH_USER_AGENT = `leafi/${VERSION} (local agent runtime)`;
 const MAX_REDIRECTS = 3;
 
 export interface ToolLimits {

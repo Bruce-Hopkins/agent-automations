@@ -1,8 +1,8 @@
 /**
- * The settings file `agents-automations init` writes. Keep it in step with
+ * The settings file `leafi init` writes. Keep it in step with
  * `.env.example`; a test checks both name the same variables.
  */
-export const ENV_TEMPLATE = `# Written by "agents-automations init". Settings for every agents-automations command.
+export const ENV_TEMPLATE = `# Written by "leafi init". Settings for every leafi command.
 # Variables already set in the shell take precedence over this file.
 
 # Provider keys: set at least one. A node can only use a model whose provider
@@ -14,8 +14,8 @@ GOOGLE_API_KEY=
 OPENROUTER_API_KEY=
 
 # Permissions: the tools a flow started over MCP (from Hermes, Claude Desktop,
-# Cursor ...) may use. Flows run with \`agents-automations run\` are not limited by
-# these. \`agents-automations settings\` changes them for you; a line left out keeps the
+# Cursor ...) may use. Flows run with \`leafi run\` are not limited by
+# these. \`leafi settings\` changes them for you; a line left out keeps the
 # value shown.
 #   web         web_fetch
 #   write       write_file, inside the run workspace
@@ -24,32 +24,32 @@ OPENROUTER_API_KEY=
 #   mcp         tools from an MCP server (the launcher below; a headless Chrome
 #               by default)
 #   flow-paths  passing a flow as a file path instead of inline JSON
-# AGENTS_AUTOMATIONS_ALLOW_WEB=false
-# AGENTS_AUTOMATIONS_ALLOW_WRITE=false
-# AGENTS_AUTOMATIONS_ALLOW_BASH=false
-# AGENTS_AUTOMATIONS_ALLOW_EMAIL=false
-# AGENTS_AUTOMATIONS_ALLOW_MCP=false
-# AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS=true
+# LEAFI_ALLOW_WEB=false
+# LEAFI_ALLOW_WRITE=false
+# LEAFI_ALLOW_BASH=false
+# LEAFI_ALLOW_EMAIL=false
+# LEAFI_ALLOW_MCP=false
+# LEAFI_ALLOW_FLOW_PATHS=true
 
 # Mailbox, for email nodes: read-only, over IMAP, with an app password. Gmail
 # offers one once 2-Step Verification is on; the account password never works.
 # With the address or password empty, agents get no email tools.
-AGENTS_AUTOMATIONS_EMAIL_ADDRESS=
-AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD=
-AGENTS_AUTOMATIONS_EMAIL_IMAP_HOST=imap.gmail.com
-AGENTS_AUTOMATIONS_EMAIL_IMAP_PORT=993
-# AGENTS_AUTOMATIONS_EMAIL_TIMEOUT_MS=20000
+LEAFI_EMAIL_ADDRESS=
+LEAFI_EMAIL_APP_PASSWORD=
+LEAFI_EMAIL_IMAP_HOST=imap.gmail.com
+LEAFI_EMAIL_IMAP_PORT=993
+# LEAFI_EMAIL_TIMEOUT_MS=20000
 
 # Nodes holding the mcp permission start this MCP server launcher and may call
 # only the tools listed. The default is a headless Chrome (chrome-devtools-mcp)
 # with its read-and-navigate tools; to use another MCP server, set both the
 # command and its tool names. Pin an exact version: upgrade it on purpose, after
 # reading its notes.
-# AGENTS_AUTOMATIONS_MCP_COMMAND=npx -y chrome-devtools-mcp@1.10.1 --headless --isolated
-# AGENTS_AUTOMATIONS_MCP_TOOLS=new_page,navigate_page,take_snapshot,evaluate_script,list_pages,wait_for,click,type_text,press_key
-# AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS=120000
+# LEAFI_MCP_COMMAND=npx -y chrome-devtools-mcp@1.10.1 --headless --isolated
+# LEAFI_MCP_TOOLS=new_page,navigate_page,take_snapshot,evaluate_script,list_pages,wait_for,click,type_text,press_key
+# LEAFI_MCP_TIMEOUT_MS=120000
 
-# ---- Everything below is for ~/.agents-automations/.env only; Hermes ignores it. ----
+# ---- Everything below is for ~/.leafi/.env only; Hermes ignores it. ----
 
 # Extra environment variables to forward to \`run_bash\` and MCP servers.
 # Everything else is filtered out, so list only names a tool genuinely needs.
@@ -80,13 +80,13 @@ WEB_FETCH_LIMIT_BYTES=262144
 
 # LangChain/LangSmith tracing uploads every prompt and tool result, so its
 # variables (LANGSMITH_TRACING, ...) are ignored unless this is true.
-# AGENTS_AUTOMATIONS_LANGSMITH_TRACING=false
+# LEAFI_LANGSMITH_TRACING=false
 
-# Runtime state. Defaults to ~/.agents-automations.
-# AGENTS_AUTOMATIONS_HOME=
+# Runtime state. Defaults to ~/.leafi.
+# LEAFI_HOME=
 # DATA_DIR=
 
-# Limits for agents-automations-mcp.
+# Limits for leafi-mcp.
 # MCP_MAX_CONCURRENT_RUNS=2
 # MCP_MAX_FLOW_BYTES=262144
 # MCP_MAX_RESULT_BYTES=262144

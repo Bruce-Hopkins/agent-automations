@@ -18,7 +18,7 @@ try {
     outfile,
     logLevel: 'warning',
     metafile: true,
-    define: { __AGENTS_AUTOMATIONS_VERSION__: JSON.stringify(version) },
+    define: { __LEAFI_VERSION__: JSON.stringify(version) },
     banner: {
       js: "import { createRequire as __createRequire } from 'node:module'; const require = __createRequire(import.meta.url);",
     },
@@ -45,7 +45,7 @@ function thirdPartyNotices(metafile) {
   }
 
   const entries = [...packages.values()]
-    .filter((entry) => entry.name !== 'agents-automations')
+    .filter((entry) => entry.name !== 'leafi')
     .sort((a, b) => a.name.localeCompare(b.name) || a.version.localeCompare(b.version));
   const unique = entries.filter(
     (entry, index) => index === 0 || entry.name !== entries[index - 1].name || entry.version !== entries[index - 1].version,

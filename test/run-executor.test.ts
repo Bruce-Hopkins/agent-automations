@@ -41,7 +41,7 @@ function fakeModels(...responses: unknown[]): ModelFactory {
 }
 
 test('a node runs to completion without a provider', async () => {
-  const dir = makeTempDir('agents-automations-exec-');
+  const dir = makeTempDir('leafi-exec-');
   const config = new RuntimeConfig({ dataDir: dir });
   const store = new RunStore(config);
   const executor = new RunExecutor(config, store, fakeModels(), new EmailService(config));
@@ -68,7 +68,7 @@ test('a node runs to completion without a provider', async () => {
 });
 
 test('a person-facing node is reported as the run deliverable', async () => {
-  const dir = makeTempDir('agents-automations-exec-');
+  const dir = makeTempDir('leafi-exec-');
   const config = new RuntimeConfig({ dataDir: dir });
   const store = new RunStore(config);
   const executor = new RunExecutor(config, store, fakeModels(), new EmailService(config));
@@ -96,10 +96,10 @@ test('a person-facing node is reported as the run deliverable', async () => {
 });
 
 test('bash sees a filtered environment and a workspace home', { skip: process.platform === 'win32' }, async () => {
-  const dir = makeTempDir('agents-automations-exec-');
+  const dir = makeTempDir('leafi-exec-');
   const config = new RuntimeConfig({ dataDir: dir });
   const store = new RunStore(config);
-  const secrets = { OPENAI_API_KEY: 'sk-live', AWS_SECRET_ACCESS_KEY: 'aws-live', AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD: 'mail-live' };
+  const secrets = { OPENAI_API_KEY: 'sk-live', AWS_SECRET_ACCESS_KEY: 'aws-live', LEAFI_EMAIL_APP_PASSWORD: 'mail-live' };
   const previous = new Map(Object.entries(secrets).map(([name]) => [name, process.env[name]]));
   Object.assign(process.env, secrets);
 
@@ -152,7 +152,7 @@ test('bash sees a filtered environment and a workspace home', { skip: process.pl
 });
 
 test('a run reports billed and list-price cost per node, and names what it could not price', async () => {
-  const dir = makeTempDir('agents-automations-exec-');
+  const dir = makeTempDir('leafi-exec-');
   const config = new RuntimeConfig({ dataDir: dir });
   const store = new RunStore(config);
   const billed = {
@@ -183,7 +183,7 @@ test('a run reports billed and list-price cost per node, and names what it could
 });
 
 test('a direct-provider run is priced at list price and dated', async () => {
-  const dir = makeTempDir('agents-automations-exec-');
+  const dir = makeTempDir('leafi-exec-');
   const config = new RuntimeConfig({ dataDir: dir });
   const store = new RunStore(config);
   const graph = new FlowService().loadPayload({
@@ -202,7 +202,7 @@ test('a direct-provider run is priced at list price and dated', async () => {
 });
 
 test('a node that runs out of calls hands over a partial result, and its successor is told', async () => {
-  const dir = makeTempDir('agents-automations-exec-');
+  const dir = makeTempDir('leafi-exec-');
   const config = new RuntimeConfig({ dataDir: dir });
   const store = new RunStore(config);
   const inputs: string[] = [];

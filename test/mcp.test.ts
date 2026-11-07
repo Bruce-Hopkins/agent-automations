@@ -10,7 +10,7 @@ test("stdio MCP lists tools and validates the example", {
   timeout: 20000,
 }, async () => {
   const dataDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), "agents-automations-mcp-test-"),
+    path.join(os.tmpdir(), "leafi-mcp-test-"),
   );
   const transport = new StdioClientTransport({
     command: process.execPath,
@@ -23,7 +23,7 @@ test("stdio MCP lists tools and validates the example", {
     ],
     stderr: "pipe",
   });
-  const client = new Client({ name: "agents-automations-test", version: "1.0.0" });
+  const client = new Client({ name: "leafi-test", version: "1.0.0" });
 
   try {
     await client.connect(transport);

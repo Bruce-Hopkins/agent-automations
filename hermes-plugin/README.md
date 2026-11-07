@@ -1,6 +1,6 @@
-# agents-automations Hermes plugin
+# leafi Hermes plugin
 
-Lets Hermes design and run agents-automations flows. The MCP server is bundled in
+Lets Hermes design and run leafi flows. The MCP server is bundled in
 `dist/server.mjs`, so the only runtime requirement is Node.js 22 or newer.
 
 ## Install
@@ -11,14 +11,14 @@ It asks for a provider key and which permissions flows may use first (see
 [Configuration](#configuration)). Running it again repeats the setup.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/leafi/main/install.sh | sh
 ```
 
 On Windows, in PowerShell:
 
 
 ```shell
-irm https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/Bruce-Hopkins/leafi/main/install.ps1 | iex
 ```
 
 
@@ -28,8 +28,8 @@ irm https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/insta
 Run this command to install the plugin
 
 ```bash
-hermes plugins install Bruce-Hopkins/agent-automations/hermes-plugin --enable
-node ~/.hermes/plugins/agents-automations/dist/server.mjs init
+hermes plugins install Bruce-Hopkins/leafi/hermes-plugin --enable
+node ~/.hermes/plugins/leafi/dist/server.mjs init
 ```
 
 And then restart Hermes.
@@ -37,19 +37,19 @@ And then restart Hermes.
 **Update** with:
 
 ```bash
-hermes plugins update agents-automations
+hermes plugins update leafi
 ```
 
 ## Configuration
 
 The plugin reads Hermes's own `.env` (with a Hermes profile, set `HERMES_HOME`
-to its folder first), not the CLI's `~/.agents-automations/.env`.
+to its folder first), not the CLI's `~/.leafi/.env`.
 
 
 | To                          | Run                                                                  |
 | --------------------------- | -------------------------------------------------------------------- |
-| Set the key and permissions | `node ~/.hermes/plugins/agents-automations/dist/server.mjs init`     |
-| Change only the permissions | `node ~/.hermes/plugins/agents-automations/dist/server.mjs settings` |
+| Set the key and permissions | `node ~/.hermes/plugins/leafi/dist/server.mjs init`     |
+| Change only the permissions | `node ~/.hermes/plugins/leafi/dist/server.mjs settings` |
 | Edit the file by hand       | Copy from [`.env.example`](../.env.example)                          |
 
 
@@ -67,7 +67,7 @@ nodes that loop use more). Once you agree, it starts the run, which Hermes asks
 you to confirm, and gives you the result with its actual cost.
 
 A run's files are in
-`~/.hermes/plugin-data/agent-plugin-agents-automations-<id>/workspaces/<runId>/`.
+`~/.hermes/plugin-data/agent-plugin-leafi-<id>/workspaces/<runId>/`.
 
 ## Trust
 

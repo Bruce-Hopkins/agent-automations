@@ -26,7 +26,7 @@ function storeAt(dataDir: string): RunStore {
 }
 
 function tempRoot(): string {
-  return makeTempDir('agents-automations-store-test-');
+  return makeTempDir('leafi-store-test-');
 }
 
 test('a run id cannot read outside the runs directory', async () => {

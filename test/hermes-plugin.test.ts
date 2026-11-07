@@ -41,15 +41,15 @@ test("plugin metadata is portable and secret-free", () => {
     mcp.$schema,
     "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   );
-  assert.equal(plugin.name, "agents-automations");
+  assert.equal(plugin.name, "leafi");
   assert.equal(plugin.version, JSON.parse(fs.readFileSync("package.json", "utf8")).version);
   assert.equal(plugin.license, "MIT");
   assert.equal(
-    plugin.extensions["com.nousresearch.hermes"].servers["agents-automations"].trust,
+    plugin.extensions["com.nousresearch.hermes"].servers["leafi"].trust,
     "untrusted",
   );
 
-  const server = mcp.mcpServers["agents-automations"];
+  const server = mcp.mcpServers["leafi"];
   assert.equal(Object.keys(mcp.mcpServers)[0], plugin.name);
   assert.equal(server.type, "stdio");
   assert.equal(server.command, "node");
@@ -59,7 +59,7 @@ test("plugin metadata is portable and secret-free", () => {
     "stdio",
     "--no-env",
   ]);
-  assert.equal(server.env.AGENTS_AUTOMATIONS_HOME, "${PLUGIN_DATA}");
+  assert.equal(server.env.LEAFI_HOME, "${PLUGIN_DATA}");
   assert.equal(server.env.OPENAI_API_KEY, "${OPENAI_API_KEY}");
   assert.equal(server.env.ANTHROPIC_API_KEY, "${ANTHROPIC_API_KEY}");
   assert.equal(server.env.GOOGLE_API_KEY, "${GOOGLE_API_KEY}");
@@ -70,7 +70,7 @@ test("plugin metadata is portable and secret-free", () => {
     "mcp.json",
     "README.md",
     "after-install.md",
-    "skills/agents-automations/SKILL.md",
+    "skills/leafi/SKILL.md",
   ];
   for (const file of files) {
     const content = fs.readFileSync(path.join(pluginDir, file), "utf8");
@@ -89,7 +89,7 @@ test("plugin metadata is portable and secret-free", () => {
   // The description is the only signal Hermes gets before loading the skill, so
   // it has to name designing a flow, not just validating and running one.
   const skill = fs.readFileSync(
-    path.join(pluginDir, "skills/agents-automations/SKILL.md"),
+    path.join(pluginDir, "skills/leafi/SKILL.md"),
     "utf8",
   );
   const description = /^description: (.+)$/m.exec(skill)?.[1] ?? "";
@@ -109,19 +109,19 @@ test("bundled MCP server serves inspection tools and rejects dangerous flows", {
 }, async () => {
   assert.ok(fs.existsSync(bundle), "run pnpm build:plugin before this test");
 
-  const root = makeTempDir("agents-automations-plugin-test-");
+  const root = makeTempDir("leafi-plugin-test-");
   const cwd = path.join(root, "cwd");
   const dataDir = path.join(root, "data");
   fs.mkdirSync(cwd);
-  fs.writeFileSync(path.join(cwd, ".env"), "AGENTS_AUTOMATIONS_ALLOW_BASH=true\n");
+  fs.writeFileSync(path.join(cwd, ".env"), "LEAFI_ALLOW_BASH=true\n");
 
   const env = { ...process.env };
-  delete env.AGENTS_AUTOMATIONS_ALLOW_BASH;
-  delete env.AGENTS_AUTOMATIONS_ALLOW_WRITE;
-  delete env.AGENTS_AUTOMATIONS_ALLOW_WEB;
-  delete env.AGENTS_AUTOMATIONS_ALLOW_EMAIL;
-  delete env.AGENTS_AUTOMATIONS_ALLOW_MCP;
-  env.AGENTS_AUTOMATIONS_HOME = dataDir;
+  delete env.LEAFI_ALLOW_BASH;
+  delete env.LEAFI_ALLOW_WRITE;
+  delete env.LEAFI_ALLOW_WEB;
+  delete env.LEAFI_ALLOW_EMAIL;
+  delete env.LEAFI_ALLOW_MCP;
+  env.LEAFI_HOME = dataDir;
 
   const transport = new StdioClientTransport({
     command: process.execPath,
@@ -131,7 +131,7 @@ test("bundled MCP server serves inspection tools and rejects dangerous flows", {
     stderr: "pipe",
   });
   const client = new Client({
-    name: "agents-automations-plugin-test",
+    name: "leafi-plugin-test",
     version: "1.0.0",
   });
 
@@ -231,7 +231,7 @@ test("after-install.md points at the bundled init where Hermes installs it", () 
 
   // Hermes shows this file once, right after `hermes plugins install`; it runs
   // no plugin code, so the command it names is the whole setup step.
-  const serverPath = String(mcp.mcpServers["agents-automations"].args[0]).replace(
+  const serverPath = String(mcp.mcpServers["leafi"].args[0]).replace(
     "${PLUGIN_ROOT}",
     `~/.hermes/plugins/${plugin.name}`,
   );
@@ -242,15 +242,15 @@ test("bundled init refuses to run without a terminal, and installs and writes no
   timeout: 15000,
 }, () => {
   assert.ok(fs.existsSync(bundle), "run pnpm build:plugin before this test");
-  const dir = makeTempDir("agents-automations-plugin-init-");
+  const dir = makeTempDir("leafi-plugin-init-");
   const hermesHome = path.join(dir, "hermes");
   const dataDir = path.join(dir, "data");
-  fs.mkdirSync(path.join(hermesHome, "plugins", "agents-automations"), { recursive: true });
+  fs.mkdirSync(path.join(hermesHome, "plugins", "leafi"), { recursive: true });
 
   const result = spawnSync(process.execPath, [bundle, "init"], {
     encoding: "utf8",
     input: "",
-    env: { ...process.env, HERMES_HOME: hermesHome, AGENTS_AUTOMATIONS_HOME: dataDir, DATA_DIR: "" },
+    env: { ...process.env, HERMES_HOME: hermesHome, LEAFI_HOME: dataDir, DATA_DIR: "" },
   });
 
   assert.equal(result.status, 1, result.stderr);
@@ -268,11 +268,11 @@ test("bundle writes no logs to stdout", { timeout: 15000 }, async () => {
   assert.equal(result.code, 0);
 });
 
-test("bundle runs the CLI's flow commands, so it is also the agents-automations command", {
+test("bundle runs the CLI's flow commands, so it is also the leafi command", {
   timeout: 15000,
 }, () => {
   assert.ok(fs.existsSync(bundle), "run pnpm build:plugin before this test");
-  const env = { ...process.env, AGENTS_AUTOMATIONS_HOME: makeTempDir("agents-automations-plugin-cli-"), DATA_DIR: "" };
+  const env = { ...process.env, LEAFI_HOME: makeTempDir("leafi-plugin-cli-"), DATA_DIR: "" };
   const cli = (args: string[], input = "") =>
     spawnSync(process.execPath, [bundle, ...args], { encoding: "utf8", input, env });
 
@@ -290,8 +290,8 @@ test("bundle runs the CLI's flow commands, so it is also the agents-automations 
   const usage = cli(["run", "--bogus"]);
   assert.equal(usage.status, 3);
   assert.match(usage.stderr, /Unknown flag "--bogus"/);
-  assert.match(cli(["run", "--help"]).stdout, /agents-automations run --graph/);
-  const misordered = cli(["--data-dir", env.AGENTS_AUTOMATIONS_HOME, "run", "--bogus"]);
+  assert.match(cli(["run", "--help"]).stdout, /leafi run --graph/);
+  const misordered = cli(["--data-dir", env.LEAFI_HOME, "run", "--bogus"]);
   assert.equal(misordered.status, 3, "a bad flag after a flag value still gets the CLI's usage error");
   assert.match(misordered.stderr, /Unknown flag "--bogus"/);
   const typo = cli(["valdate"]);
@@ -301,8 +301,8 @@ test("bundle runs the CLI's flow commands, so it is also the agents-automations 
   // The server's own entry points are unchanged.
   const help = cli(["--help"]);
   assert.equal(help.status, 0);
-  assert.match(help.stdout, /agents-automations <validate\|schema\|graph\|run\|runs\|providers>/);
-  assert.match(help.stdout, /agents-automations init/);
+  assert.match(help.stdout, /leafi <validate\|schema\|graph\|run\|runs\|providers>/);
+  assert.match(help.stdout, /leafi init/);
   assert.equal(cli(["--version"]).stdout.trim(), JSON.parse(fs.readFileSync("package.json", "utf8")).version);
 });
 
@@ -333,7 +333,7 @@ function runWithoutInput(
         stdio: ["ignore", "pipe", "ignore"],
         env: {
           ...process.env,
-          AGENTS_AUTOMATIONS_HOME: makeTempDir("agents-automations-plugin-io-"),
+          LEAFI_HOME: makeTempDir("leafi-plugin-io-"),
         },
       },
     );

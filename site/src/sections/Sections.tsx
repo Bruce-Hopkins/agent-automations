@@ -27,8 +27,8 @@ export function Goals() {
           <div className="kicker">Goals</div>
           <h2>Better than one agent doing it alone.</h2>
           <p>
-            Ask Hermes for a multi-step task. It designs a small flow of agents, checks it for free, shows you the
-            diagram, and runs it once you agree. The flow is saved, so next time it's one call.
+            Ask Hermes for a multi-step task. With leafi, it designs a small flow of agents, checks it for free,
+            shows you the diagram, and runs it once you agree. The flow is saved, so next time it's one call.
           </p>
         </div>
         <div className="goals">

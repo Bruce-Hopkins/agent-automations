@@ -1,12 +1,12 @@
 {
-  "name": "agents-automations",
-  "version": "0.0.2",
+  "name": "leafi",
+  "version": "0.0.3",
   "private": true,
   "description": "Build, check and run automations made of linked LLM agents, from the terminal or from your agent",
   "packageManager": "pnpm@12.8.1",
   "bin": {
-    "agents-automations": "dist/main.js",
-    "agents-automations-mcp": "dist/mcp/main.js"
+    "leafi": "dist/main.js",
+    "leafi-mcp": "dist/mcp/main.js"
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
@@ -21,8 +21,8 @@
     "test:plugin": "pnpm build:plugin && tsx --test test/hermes-plugin.test.ts",
     "test:pack": "node scripts/pack-test.mjs",
     "bench": "tsx bench/node-bench.ts",
-    "site:dev": "pnpm --filter agents-automations-site dev",
-    "site:build": "pnpm --filter agents-automations-site build"
+    "site:dev": "pnpm --filter leafi-site dev",
+    "site:build": "pnpm --filter leafi-site build"
   },
   "dependencies": {
     "@langchain/anthropic": "^1.5.12",
@@ -47,11 +47,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bruce-Hopkins/agent-automations.git"
+    "url": "git+https://github.com/Bruce-Hopkins/leafi.git"
   },
-  "homepage": "https://github.com/Bruce-Hopkins/agent-automations",
+  "homepage": "https://github.com/Bruce-Hopkins/leafi",
   "bugs": {
-    "url": "https://github.com/Bruce-Hopkins/agent-automations/issues"
+    "url": "https://github.com/Bruce-Hopkins/leafi/issues"
   },
   "license": "MIT",
   "keywords": [

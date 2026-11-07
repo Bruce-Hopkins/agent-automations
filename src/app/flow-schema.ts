@@ -3,14 +3,14 @@ const PROVIDERS = ['openai', 'anthropic', 'google', 'openrouter'];
 /**
  * Static contract for a flow document. Domain rules that JSON Schema cannot
  * express — at least one entry node, acyclicity, reachability, branch uniqueness — are
- * reported by `agents-automations validate`.
+ * reported by `leafi validate`.
  */
 export const FLOW_SCHEMA = {
   $schema: 'https://json-schema.org/draft/2020-12/schema',
-  $id: 'https://agents-automations.local/schema/flow.json',
-  title: 'agents-automations flow',
+  $id: 'https://leafi.local/schema/flow.json',
+  title: 'leafi flow',
   description:
-    'A flow document. Runtime-owned fields are not accepted; id, createdAt and updatedAt are added when the flow is loaded. Domain rules: at least one entry node (no incoming edges), all of which run in parallel and receive --input; the graph must be connected; every node reachable from an entry; no cycles; label, model and prompt non-empty; with more than one outgoing edge, a "branch" node needs a unique branch and a non-empty condition per edge, a "parallel" node takes them all. "agents-automations validate" additionally reports design warnings (severity "warning") and a per-node minimum (tokens the flow implies, a lower bound) for flows that would waste tokens or decide non-deterministically.',
+    'A flow document. Runtime-owned fields are not accepted; id, createdAt and updatedAt are added when the flow is loaded. Domain rules: at least one entry node (no incoming edges), all of which run in parallel and receive --input; the graph must be connected; every node reachable from an entry; no cycles; label, model and prompt non-empty; with more than one outgoing edge, a "branch" node needs a unique branch and a non-empty condition per edge, a "parallel" node takes them all. "leafi validate" additionally reports design warnings (severity "warning") and a per-node minimum (tokens the flow implies, a lower bound) for flows that would waste tokens or decide non-deterministically.',
   type: 'object',
   required: ['nodes', 'edges'],
   properties: {
@@ -34,7 +34,7 @@ export const FLOW_SCHEMA = {
           permissions: {
             type: 'object',
             description:
-              'Tools the agent may use. All default to false. email_read needs a mailbox credential (AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD). mcp launches the configured MCP server for this node (by default chrome-devtools-mcp, a headless Chrome), configured with AGENTS_AUTOMATIONS_MCP_COMMAND and AGENTS_AUTOMATIONS_MCP_TOOLS.',
+              'Tools the agent may use. All default to false. email_read needs a mailbox credential (LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD). mcp launches the configured MCP server for this node (by default chrome-devtools-mcp, a headless Chrome), configured with LEAFI_MCP_COMMAND and LEAFI_MCP_TOOLS.',
             properties: {
               read: { type: 'boolean', default: false },
               write: { type: 'boolean', default: false },
@@ -49,7 +49,7 @@ export const FLOW_SCHEMA = {
                 type: 'boolean',
                 default: false,
                 description:
-                  'The tools of the MCP server set by AGENTS_AUTOMATIONS_MCP_COMMAND, limited to AGENTS_AUTOMATIONS_MCP_TOOLS. By default that is a real Chrome through the chrome-devtools-mcp server: new_page, navigate_page, take_snapshot, evaluate_script and the rest. Use the browser for pages that block plain HTTP fetches.',
+                  'The tools of the MCP server set by LEAFI_MCP_COMMAND, limited to LEAFI_MCP_TOOLS. By default that is a real Chrome through the chrome-devtools-mcp server: new_page, navigate_page, take_snapshot, evaluate_script and the rest. Use the browser for pages that block plain HTTP fetches.',
               },
             },
           },
@@ -74,7 +74,7 @@ export const FLOW_SCHEMA = {
             type: 'array',
             items: { type: 'string' },
             description:
-              'Lint rule codes this node opts out of, e.g. ["json-via-web-fetch"] when the endpoint really is HTML. See "agents-automations validate".',
+              'Lint rule codes this node opts out of, e.g. ["json-via-web-fetch"] when the endpoint really is HTML. See "leafi validate".',
           },
           inputs: {
             type: 'array',
@@ -152,7 +152,7 @@ export const FLOW_SCHEMA = {
   },
 } as const;
 
-/** Guaranteed to pass `agents-automations validate`; `schema example | validate --graph -` exits 0. */
+/** Guaranteed to pass `leafi validate`; `schema example | validate --graph -` exits 0. */
 export const EXAMPLE_FLOW = {
   name: 'Review pipeline',
   nodes: [

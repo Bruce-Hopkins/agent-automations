@@ -27,7 +27,7 @@ const FLAGS: Record<string, FlagSpec> = {
   events: { takesValue: true, description: 'Event output: ndjson | none | pretty.' },
   strict: { takesValue: false, description: 'validate: treat design warnings as failures.' },
   format: { takesValue: true, description: 'graph: ascii | mermaid | dot.' },
-  'env-file': { takesValue: true, description: 'Load environment variables from this file instead of ~/.agents-automations/.env.' },
+  'env-file': { takesValue: true, description: 'Load environment variables from this file instead of ~/.leafi/.env.' },
   'data-dir': { takesValue: true, description: 'Store run artifacts under this directory.' },
   save: { takesValue: false, description: 'Persist run metadata and events.' },
   'no-save': { takesValue: false, description: 'Do not persist run metadata or events.' },
@@ -128,7 +128,7 @@ export const GLOBAL_FLAGS = ['env-file', 'data-dir'] as const;
 export function requireFlag(parsed: ParsedArgs, name: string): string {
   const value = parsed.flags[name];
   if (typeof value !== 'string' || value.length === 0) {
-    throw new UsageError(`"agents-automations ${parsed.command}" needs --${name}.`);
+    throw new UsageError(`"leafi ${parsed.command}" needs --${name}.`);
   }
   return value;
 }
@@ -155,15 +155,15 @@ export function assertNoPositionals(parsed: ParsedArgs): void {
   }
 }
 
-const COMMON_HEADER = `agents-automations - run automations made of linked LLM agents
+const COMMON_HEADER = `leafi - run automations made of linked LLM agents
 
 Usage:
-  agents-automations <command> [flags]
-  agents-automations --version
+  leafi <command> [flags]
+  leafi --version
 
 Commands:
   init [--provider <id>] [--yes]
-                              Set up ~/.agents-automations/.env and write a starter
+                              Set up ~/.leafi/.env and write a starter
                               flow.json to the current directory.
   settings [--allow <list>] [--deny <list>]
                               Choose which tools MCP clients may give flows,
@@ -193,14 +193,14 @@ const OUTPUT_CONTRACT = `Output:
   followed by a final line: {"type":"result","run":{...}}.
 
 Flow JSON:
-  Run "agents-automations schema" for the JSON Schema and "agents-automations schema example"
+  Run "leafi schema" for the JSON Schema and "leafi schema example"
   for a runnable two-node flow.`;
 
 const RUNTIME = `Runtime:
-  Settings are read from ~/.agents-automations/.env (the data directory's .env), or
+  Settings are read from ~/.leafi/.env (the data directory's .env), or
   from --env-file. A .env in the current directory is not read.
-  Run artifacts live under ~/.agents-automations unless --data-dir or DATA_DIR is set.
-  LangSmith tracing variables are ignored unless AGENTS_AUTOMATIONS_LANGSMITH_TRACING=true.
+  Run artifacts live under ~/.leafi unless --data-dir or DATA_DIR is set.
+  LangSmith tracing variables are ignored unless LEAFI_LANGSMITH_TRACING=true.
   --no-save keeps the workspace but writes neither meta.json nor events.jsonl.`;
 
 export function providerCatalogText(): string {
@@ -217,10 +217,10 @@ export function globalHelp(): string {
 export function commandHelp(command: string | undefined): string {
   switch (command) {
     case 'init':
-      return `agents-automations init [--provider <id>] [--yes]
+      return `leafi init [--provider <id>] [--yes]
 
 Gets a new machine ready to run flows:
-  - creates the data directory (~/.agents-automations, owner-only);
+  - creates the data directory (~/.leafi, owner-only);
   - writes its .env settings file (owner-only) unless one exists, and, in a
     terminal, asks for one provider's API key with the input hidden;
   - writes a starter research flow to ./flow.json unless that file exists.
@@ -234,20 +234,20 @@ Flags:
                      anthropic with --yes or off a terminal).
   --yes              Ask nothing.
   --json             Print the JSON report even in a terminal.
-  --env-file <path>  Write the settings here instead of ~/.agents-automations/.env.
-  --data-dir <path>  Use this data directory instead of ~/.agents-automations.
+  --env-file <path>  Write the settings here instead of ~/.leafi/.env.
+  --data-dir <path>  Use this data directory instead of ~/.leafi.
 
 To install into Hermes, Claude Code, Claude Desktop or Cursor, use the installer
 (see the README); its setup is the MCP server's init.\n`;
     case 'settings':
-      return `agents-automations settings [--allow <list>] [--deny <list>] [--json]
+      return `leafi settings [--allow <list>] [--deny <list>] [--json]
 
-Changes which tools the MCP server (agents-automations-mcp, and the Hermes plugin)
-lets a flow use, by writing the AGENTS_AUTOMATIONS_ALLOW_* lines of its settings files for you.
-Flows run with "agents-automations run" are not limited by these.
+Changes which tools the MCP server (leafi-mcp, and the Hermes plugin)
+lets a flow use, by writing the LEAFI_ALLOW_* lines of its settings files for you.
+Flows run with "leafi run" are not limited by these.
 
 It changes every file in use: Hermes's ($HERMES_HOME/.env or ~/.hermes/.env)
-when the Hermes plugin is installed, and ~/.agents-automations/.env when it
+when the Hermes plugin is installed, and ~/.leafi/.env when it
 exists or Hermes has no plugin. One checklist, or one --allow/--deny, applies
 to all of them.
 
@@ -266,9 +266,9 @@ Flags:
                      "--allow all --deny bash" allows everything but bash.
   --json             Print the result as JSON even in a terminal.
   --env-file <path>  Change this file instead.
-  --data-dir <path>  Use this data directory's .env instead of ~/.agents-automations.\n`;
+  --data-dir <path>  Use this data directory's .env instead of ~/.leafi.\n`;
     case 'validate':
-      return `agents-automations validate --graph <path|->
+      return `leafi validate --graph <path|->
 
 Parses and validates a flow without touching a model. Prints
 {"ok":bool,"issues":[...],"warnings":[...],"minimum":{...}} on stdout.
@@ -279,13 +279,13 @@ Flags:
   --strict           Treat design warnings as failures.
   --help             Show this help.\n`;
     case 'schema':
-      return `agents-automations schema [example]
+      return `leafi schema [example]
 
 Prints the flow JSON Schema to stdout, or a runnable example with
-"agents-automations schema example". "schema example | agents-automations validate --graph -"
+"leafi schema example". "schema example | leafi validate --graph -"
 exits 0, so the example is always valid.\n`;
     case 'run':
-      return `agents-automations run --graph <path|-> [--input <text>|--input-file <path>] [--json] [--events <ndjson|none|pretty>]
+      return `leafi run --graph <path|-> [--input <text>|--input-file <path>] [--json] [--events <ndjson|none|pretty>]
 
 Executes a flow, streams its events, and waits for the result.
 
@@ -302,16 +302,16 @@ Flags:
 
 ${EXIT_CODES}\n\n${OUTPUT_CONTRACT}\n\n${RUNTIME}\n\n${providerCatalogText()}\n`;
     case 'graph':
-      return `agents-automations graph --graph <path|-> [--format ascii|mermaid|dot]
+      return `leafi graph --graph <path|-> [--format ascii|mermaid|dot]
 
 Draws the flow. The ascii format is the default and fits a terminal.\n`;
     case 'providers':
-      return `agents-automations providers
+      return `leafi providers
 
 Lists the providers whose API key is configured, with the models each offers.
 The list is fetched live and falls back to the static catalog.\n`;
     case 'runs':
-      return `agents-automations runs [list|show <id>]
+      return `leafi runs [list|show <id>]
 
 Lists persisted runs, or prints one run's metadata and events.\n`;
     default:

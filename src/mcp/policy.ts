@@ -22,14 +22,14 @@ export class PolicyError extends Error {
   }
 }
 
-/** What the server reads when a AGENTS_AUTOMATIONS_ALLOW_* setting is unset or empty. */
+/** What the server reads when a LEAFI_ALLOW_* setting is unset or empty. */
 export const ALLOW_DEFAULTS = {
-  AGENTS_AUTOMATIONS_ALLOW_BASH: false,
-  AGENTS_AUTOMATIONS_ALLOW_WRITE: false,
-  AGENTS_AUTOMATIONS_ALLOW_WEB: false,
-  AGENTS_AUTOMATIONS_ALLOW_EMAIL: false,
-  AGENTS_AUTOMATIONS_ALLOW_MCP: false,
-  AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS: true,
+  LEAFI_ALLOW_BASH: false,
+  LEAFI_ALLOW_WRITE: false,
+  LEAFI_ALLOW_WEB: false,
+  LEAFI_ALLOW_EMAIL: false,
+  LEAFI_ALLOW_MCP: false,
+  LEAFI_ALLOW_FLOW_PATHS: true,
 } as const;
 
 export type AllowSetting = keyof typeof ALLOW_DEFAULTS;
@@ -37,12 +37,12 @@ export type AllowSetting = keyof typeof ALLOW_DEFAULTS;
 export function readMcpPolicy(config: RuntimeConfig): McpPolicy {
   const allowed = (name: AllowSetting) => readBoolean(name, ALLOW_DEFAULTS[name]);
   return {
-    allowBash: allowed('AGENTS_AUTOMATIONS_ALLOW_BASH'),
-    allowWrite: allowed('AGENTS_AUTOMATIONS_ALLOW_WRITE'),
-    allowWeb: allowed('AGENTS_AUTOMATIONS_ALLOW_WEB'),
-    allowEmail: allowed('AGENTS_AUTOMATIONS_ALLOW_EMAIL'),
-    allowMcp: allowed('AGENTS_AUTOMATIONS_ALLOW_MCP'),
-    allowFlowPaths: allowed('AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS'),
+    allowBash: allowed('LEAFI_ALLOW_BASH'),
+    allowWrite: allowed('LEAFI_ALLOW_WRITE'),
+    allowWeb: allowed('LEAFI_ALLOW_WEB'),
+    allowEmail: allowed('LEAFI_ALLOW_EMAIL'),
+    allowMcp: allowed('LEAFI_ALLOW_MCP'),
+    allowFlowPaths: allowed('LEAFI_ALLOW_FLOW_PATHS'),
     maxConcurrentRuns: config.mcpMaxConcurrentRuns,
     maxFlowBytes: config.mcpMaxFlowBytes,
     maxResultBytes: config.mcpMaxResultBytes,
@@ -58,11 +58,11 @@ interface GatedPermission {
 }
 
 const GATED: readonly GatedPermission[] = [
-  { permission: 'web', setting: 'AGENTS_AUTOMATIONS_ALLOW_WEB', id: 'web', field: 'allowWeb' },
-  { permission: 'write', setting: 'AGENTS_AUTOMATIONS_ALLOW_WRITE', id: 'write', field: 'allowWrite' },
-  { permission: 'bash', setting: 'AGENTS_AUTOMATIONS_ALLOW_BASH', id: 'bash', field: 'allowBash' },
-  { permission: 'email_read', setting: 'AGENTS_AUTOMATIONS_ALLOW_EMAIL', id: 'email', field: 'allowEmail' },
-  { permission: 'mcp', setting: 'AGENTS_AUTOMATIONS_ALLOW_MCP', id: 'mcp', field: 'allowMcp' },
+  { permission: 'web', setting: 'LEAFI_ALLOW_WEB', id: 'web', field: 'allowWeb' },
+  { permission: 'write', setting: 'LEAFI_ALLOW_WRITE', id: 'write', field: 'allowWrite' },
+  { permission: 'bash', setting: 'LEAFI_ALLOW_BASH', id: 'bash', field: 'allowBash' },
+  { permission: 'email_read', setting: 'LEAFI_ALLOW_EMAIL', id: 'email', field: 'allowEmail' },
+  { permission: 'mcp', setting: 'LEAFI_ALLOW_MCP', id: 'mcp', field: 'allowMcp' },
 ];
 
 /** A permission a flow requests that the policy denies, with the labels of the nodes requesting it. */

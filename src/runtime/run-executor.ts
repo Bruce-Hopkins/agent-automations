@@ -453,7 +453,7 @@ export class RunExecutor {
     const connection = this.email.open();
     if (!connection) {
       throw new NodeFailureError(
-        `Node "${node.label}" needs mailbox access, but no mailbox is configured. Set AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD in the environment.`,
+        `Node "${node.label}" needs mailbox access, but no mailbox is configured. Set LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD in the environment.`,
         node.id,
       );
     }
@@ -499,7 +499,7 @@ export class RunExecutor {
     } catch (error) {
       throw new NodeFailureError(
         `Node "${node.label}" needs the MCP server, but it could not start. ${describeError(error)} ` +
-          `Set AGENTS_AUTOMATIONS_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${this.config.mcpCommand}).`,
+          `Set LEAFI_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${this.config.mcpCommand}).`,
         node.id,
       );
     }

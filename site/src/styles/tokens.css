@@ -1,25 +1,33 @@
 :root {
-  --bg: #f6f5f1;
+  /* The logo's colours: its leaf runs cyan → emerald → lime on navy. */
+  --brand-cyan: #06b6d4;
+  --brand-emerald: #10b981;
+  --brand-lime: #a3e635;
+  --brand-navy: #0b1020;
+  --brand-gradient: linear-gradient(100deg, var(--brand-cyan), var(--brand-emerald) 55%, var(--brand-lime));
+
+  --bg: #f5f7fa;
   --surface: #ffffff;
-  --surface-2: #eeece6;
-  --ink: #17181c;
-  --ink-2: #464951;
-  --ink-3: #737680;
-  --line: #dcd9d0;
-  --accent: #2f5bea;
-  --accent-hover: #1f46c9;
-  --accent-soft: #e4e9fc;
-  --ok: #1d8657;
+  --surface-2: #eaeef4;
+  --ink: #0b1020;
+  --ink-2: #3d475c;
+  --ink-3: #687389;
+  --line: #d8dee8;
+  /* A deeper emerald than the logo's, so links and labels read on a light page. */
+  --accent: #047857;
+  --accent-hover: #065f46;
+  --accent-soft: #d7f5e9;
+  --ok: #047857;
   --warn-bg: #fdf3e7;
   --warn-line: #f0d2ad;
   --warn-ink: #7a3e0c;
-  --term-bg: #15171c;
-  --term-line: #2a2d35;
-  --term-ink: #e4e4df;
-  --term-dim: #8b8f99;
-  --term-accent: #9fb3ff;
-  --term-ok: #7fd1a4;
-  --shadow: 0 1px 2px rgba(20, 20, 30, .05), 0 10px 30px rgba(20, 20, 30, .07);
+  --term-bg: #0b1020;
+  --term-line: #1f2942;
+  --term-ink: #e6ebf3;
+  --term-dim: #8791a6;
+  --term-accent: #34d399;
+  --term-ok: #a3e635;
+  --shadow: 0 1px 2px rgba(11, 16, 32, .05), 0 10px 30px rgba(11, 16, 32, .08);
   --radius: 14px;
   --nav-h: 64px;
   --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -29,22 +37,22 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f1014;
-    --surface: #16181d;
-    --surface-2: #1d2027;
-    --ink: #ecebe6;
-    --ink-2: #b6b7bc;
-    --ink-3: #868892;
-    --line: #2a2d35;
-    --accent: #8ea5ff;
-    --accent-hover: #b0c0ff;
-    --accent-soft: #1e2542;
-    --ok: #6cc897;
+    --bg: #0b1020;
+    --surface: #111830;
+    --surface-2: #18213b;
+    --ink: #e8ecf4;
+    --ink-2: #b2bbcc;
+    --ink-3: #8590a5;
+    --line: #242e48;
+    --accent: #34d399;
+    --accent-hover: #6ee7b7;
+    --accent-soft: #0e2f2b;
+    --ok: #34d399;
     --warn-bg: #2a1f14;
     --warn-line: #4d3420;
     --warn-ink: #f2c79c;
-    --term-bg: #0a0b0e;
-    --term-line: #23262d;
+    --term-bg: #070b17;
+    --term-line: #1d2640;
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px rgba(0, 0, 0, .35);
     color-scheme: dark;
   }
@@ -88,9 +96,9 @@ section[id] { scroll-margin-top: var(--nav-h); }
   transition: background-color .25s, border-color .25s;
 }
 .nav .wrap { display: flex; align-items: center; gap: 24px; height: var(--nav-h); max-width: 1240px; }
-.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font: 500 15px/1 var(--mono); }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font: 600 20px/1 var(--sans); letter-spacing: -.01em; }
 .brand:hover { color: var(--ink); }
-.brand img { width: 26px; height: 26px; }
+.brand img { width: 28px; height: 28px; }
 .nav-links { display: flex; gap: 22px; margin-left: auto; align-items: center; }
 .nav-links a:not(.btn) { color: var(--ink-2); text-decoration: none; font-size: 15px; }
 .nav-links a:not(.btn):hover { color: var(--ink); }
@@ -99,7 +107,7 @@ section[id] { scroll-margin-top: var(--nav-h); }
 
 .nav.on-hero {
   /* no-repeat: otherwise the gradient tiles into the 1px border row and draws a dark line. */
-  background: linear-gradient(to bottom, rgba(7, 8, 11, .82), rgba(7, 8, 11, 0)) no-repeat;
+  background: linear-gradient(to bottom, rgba(11, 16, 32, .82), rgba(11, 16, 32, 0)) no-repeat;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-bottom-color: transparent;

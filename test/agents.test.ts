@@ -37,8 +37,13 @@ echo "hermes $*" >> "$FAKE_LOG"
 read -r state < "$FAKE_HERMES_STATE"
 case "$1 $2" in
   "plugins show")
+    if [ "$3" = agents-automations ]; then
+      [ -f "$FAKE_HERMES_STATE.legacy" ] || exit 1
+      printf '\\nagents-automations v0.0.2\\nStatus: enabled\\n'
+      exit 0
+    fi
     [ "$state" = missing ] && exit 1
-    printf '\\nagents-automations v0.0.1\\nStatus: %s\\n' "$state" ;;
+    printf '\\nleafi v0.0.1\\nStatus: %s\\n' "$state" ;;
   "plugins install")
     [ "$3" = fail ] && exit 2
     echo enabled > "$FAKE_HERMES_STATE" ;;
@@ -62,8 +67,8 @@ interface Machine {
  * (and nothing else, so no real agent is ever found), and Hermes's plugin in
  * `hermesState`.
  */
-function machine(commands: { hermes?: string; claude?: boolean } = {}): Machine {
-  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'agents-automations-agents-'));
+function machine(commands: { hermes?: string; claude?: boolean; legacyHermes?: boolean } = {}): Machine {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'leafi-agents-'));
   tempDirs.push(home);
   const bin = path.join(home, 'bin');
   fs.mkdirSync(bin);
@@ -71,6 +76,9 @@ function machine(commands: { hermes?: string; claude?: boolean } = {}): Machine 
   if (commands.hermes) {
     fs.writeFileSync(path.join(bin, 'hermes'), FAKE_HERMES, { mode: 0o755 });
     fs.writeFileSync(path.join(home, 'hermes-state'), `${commands.hermes}\n`);
+    if (commands.legacyHermes) {
+      fs.writeFileSync(path.join(home, 'hermes-state.legacy'), '');
+    }
   }
   if (commands.claude) {
     fs.writeFileSync(path.join(bin, 'claude'), FAKE_CLAUDE, { mode: 0o755 });
@@ -110,8 +118,9 @@ test('a missing Hermes plugin is installed with --enable from the given source',
   const result = await hermes.install('/srv/server.mjs');
 
   assert.deepEqual(m.calls(), [
-    'hermes plugins show agents-automations',
+    'hermes plugins show leafi',
     'hermes plugins install owner/repo/hermes-plugin --enable',
+    'hermes plugins show leafi',
     'hermes plugins show agents-automations',
   ]);
   assert.deepEqual(result, { ok: true, line: 'Hermes: installed and enabled the plugin from owner/repo/hermes-plugin.' });
@@ -120,14 +129,23 @@ test('a missing Hermes plugin is installed with --enable from the given source',
 test('an installed but disabled plugin is enabled, not reinstalled, and an enabled one is left alone', posixOnly, async () => {
   const disabled = machine({ hermes: 'not enabled' });
   const result = await byId(await findAgents('owner/repo/hermes-plugin'), 'hermes').install('/srv/server.mjs');
-  assert.deepEqual(disabled.calls().slice(1), ['hermes plugins enable agents-automations', 'hermes plugins show agents-automations']);
+  assert.deepEqual(disabled.calls().slice(1), ['hermes plugins enable leafi', 'hermes plugins show leafi', 'hermes plugins show agents-automations']);
   assert.deepEqual(result, { ok: true, line: 'Hermes: enabled the plugin.' });
 
   const enabled = machine({ hermes: 'enabled' });
   const hermes = byId(await findAgents('owner/repo/hermes-plugin'), 'hermes');
   assert.match(hermes.detail, /installed and enabled/);
   assert.equal((await hermes.install('/srv/server.mjs')).ok, true);
-  assert.deepEqual(enabled.calls(), ['hermes plugins show agents-automations']);
+  assert.deepEqual(enabled.calls(), ['hermes plugins show leafi', 'hermes plugins show agents-automations']);
+});
+
+test('the plugin from before the rename is pointed out, not removed: its data holds saved flows', posixOnly, async () => {
+  const m = machine({ hermes: 'enabled', legacyHermes: true });
+  const result = await byId(await findAgents('owner/repo/hermes-plugin'), 'hermes').install('/srv/server.mjs');
+
+  assert.equal(result.ok, true);
+  assert.match(result.line, /agents-automations, is still installed.*"hermes plugins remove agents-automations"/);
+  assert.ok(!m.calls().some((call) => /remove|uninstall/.test(call)), 'nothing is removed');
 });
 
 test('a failed Hermes install is reported with the command that failed', posixOnly, async () => {
@@ -143,15 +161,27 @@ test('Claude Code gets the server at user scope, unless its settings already lis
   const claude = byId(await findAgents(), 'claude-code');
   const result = await claude.install('/srv/server.mjs');
 
-  assert.deepEqual(m.calls(), ['claude mcp add --scope user agents-automations -- node /srv/server.mjs --transport stdio']);
+  assert.deepEqual(m.calls(), ['claude mcp add --scope user leafi -- node /srv/server.mjs --transport stdio']);
   assert.deepEqual(result, { ok: true, line: 'Claude Code: added the server for all projects.' });
 
   const again = machine({ claude: true });
-  fs.writeFileSync(path.join(again.home, '.claude.json'), JSON.stringify({ mcpServers: { 'agents-automations': {} } }));
+  fs.writeFileSync(path.join(again.home, '.claude.json'), JSON.stringify({ mcpServers: { leafi: {} } }));
   const added = byId(await findAgents(), 'claude-code');
   assert.match(added.detail, /already added/);
   assert.equal((await added.install('/srv/server.mjs')).ok, true);
   assert.deepEqual(again.calls(), [], 'nothing is run for a server that is already there');
+});
+
+test("Claude Code's entry from before the rename is removed when the server is added", posixOnly, async () => {
+  const m = machine({ claude: true });
+  fs.writeFileSync(path.join(m.home, '.claude.json'), JSON.stringify({ mcpServers: { 'agents-automations': {} } }));
+  const result = await byId(await findAgents(), 'claude-code').install('/srv/server.mjs');
+
+  assert.deepEqual(m.calls(), [
+    'claude mcp remove --scope user agents-automations',
+    'claude mcp add --scope user leafi -- node /srv/server.mjs --transport stdio',
+  ]);
+  assert.deepEqual(result, { ok: true, line: 'Claude Code: added the server for all projects and removed the old agents-automations entry.' });
 });
 
 test("Cursor's mcp.json gets the server's entry, keeping every other server and setting", posixOnly, async () => {
@@ -165,7 +195,7 @@ test("Cursor's mcp.json gets the server's entry, keeping every other server and 
   assert.deepEqual(await cursor.install('/srv/server.mjs'), { ok: true, line: 'Cursor: added the server to ~/.cursor/mcp.json.' });
 
   assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')), {
-    mcpServers: { other: { command: 'other' }, 'agents-automations': mcpEntry('/srv/server.mjs') },
+    mcpServers: { other: { command: 'other' }, leafi: mcpEntry('/srv/server.mjs') },
     theme: 'dark',
   });
   assert.equal(fs.statSync(file).mode & 0o777, 0o600);
@@ -181,12 +211,12 @@ test("Claude Desktop's settings file is created when the app has none yet", posi
 
   assert.equal(result.ok, true, result.line);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'claude_desktop_config.json'), 'utf8')), {
-    mcpServers: { 'agents-automations': mcpEntry('/srv/server.mjs') },
+    mcpServers: { leafi: mcpEntry('/srv/server.mjs') },
   });
 });
 
 test('a settings file that is not a JSON object is refused and left as it was', async () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'agents-automations-mcp-config-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'leafi-mcp-config-'));
   tempDirs.push(dir);
   const cases = { 'broken.json': '{ "mcpServers": ', 'list.json': '[]', 'servers.json': '{ "mcpServers": [] }' };
   for (const [name, content] of Object.entries(cases)) {
@@ -198,14 +228,26 @@ test('a settings file that is not a JSON object is refused and left as it was', 
 });
 
 test('a changed server path updates the entry', async () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'agents-automations-mcp-config-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'leafi-mcp-config-'));
   tempDirs.push(dir);
   const file = path.join(dir, 'mcp.json');
 
   assert.equal(await addToMcpConfig(file, mcpEntry('/old/server.mjs')), 'added');
   assert.equal(await addToMcpConfig(file, mcpEntry('/old/server.mjs')), 'unchanged');
   assert.equal(await addToMcpConfig(file, mcpEntry('/new/server.mjs')), 'updated');
-  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')).mcpServers['agents-automations'].args[0], '/new/server.mjs');
+  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')).mcpServers.leafi.args[0], '/new/server.mjs');
+});
+
+test('the entry from before the rename is replaced, keeping every other server', posixOnly, async () => {
+  const m = machine();
+  const file = path.join(m.home, '.cursor', 'mcp.json');
+  fs.mkdirSync(path.dirname(file));
+  fs.writeFileSync(file, JSON.stringify({ mcpServers: { 'agents-automations': { command: 'node', args: ['/old/server.mjs'] }, other: {} } }));
+
+  const cursor = byId(await findAgents(), 'cursor');
+  assert.equal(cursor.detail, 'replaces the old agents-automations entry in ~/.cursor/mcp.json');
+  assert.deepEqual(await cursor.install('/srv/server.mjs'), { ok: true, line: 'Cursor: updated the server in ~/.cursor/mcp.json.' });
+  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')).mcpServers, { other: {}, leafi: mcpEntry('/srv/server.mjs') });
 });
 
 test('the entry names the node on the PATH, which survives an upgrade, else this process\'s own', posixOnly, () => {

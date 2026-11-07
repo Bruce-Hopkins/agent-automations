@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { PROVIDER_CATALOG, type ProviderDefinition } from '../providers/provider-catalog';
@@ -37,7 +38,7 @@ const DEFAULTS = {
 } as const;
 
 export interface RuntimeConfigOptions {
-  /** Overrides `DATA_DIR`, `AGENTS_AUTOMATIONS_HOME` and the home-directory default. */
+  /** Overrides `DATA_DIR`, `LEAFI_HOME` and the home-directory default. */
   dataDir?: string;
 }
 
@@ -92,10 +93,10 @@ export class RuntimeConfig {
     this.toolOutputStepLimitBytes = readInt('TOOL_OUTPUT_STEP_LIMIT_BYTES', DEFAULTS.toolOutputStepLimitBytes);
     this.webFetchTimeoutMs = readInt('WEB_FETCH_TIMEOUT_MS', DEFAULTS.webFetchTimeoutMs);
     this.webFetchLimitBytes = readInt('WEB_FETCH_LIMIT_BYTES', DEFAULTS.webFetchLimitBytes);
-    this.emailTimeoutMs = readInt('AGENTS_AUTOMATIONS_EMAIL_TIMEOUT_MS', DEFAULTS.emailTimeoutMs);
-    this.mcpCommand = readEnv('AGENTS_AUTOMATIONS_MCP_COMMAND') ?? DEFAULT_MCP_COMMAND;
-    this.mcpTimeoutMs = readInt('AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS', DEFAULTS.mcpTimeoutMs);
-    this.mcpTools = readList('AGENTS_AUTOMATIONS_MCP_TOOLS', DEFAULT_MCP_TOOLS);
+    this.emailTimeoutMs = readInt('LEAFI_EMAIL_TIMEOUT_MS', DEFAULTS.emailTimeoutMs);
+    this.mcpCommand = readEnv('LEAFI_MCP_COMMAND') ?? DEFAULT_MCP_COMMAND;
+    this.mcpTimeoutMs = readInt('LEAFI_MCP_TIMEOUT_MS', DEFAULTS.mcpTimeoutMs);
+    this.mcpTools = readList('LEAFI_MCP_TOOLS', DEFAULT_MCP_TOOLS);
     this.mcpMaxConcurrentRuns = readInt('MCP_MAX_CONCURRENT_RUNS', DEFAULTS.mcpMaxConcurrentRuns);
     this.mcpMaxFlowBytes = readInt('MCP_MAX_FLOW_BYTES', DEFAULTS.mcpMaxFlowBytes);
     this.mcpMaxResultBytes = readInt('MCP_MAX_RESULT_BYTES', DEFAULTS.mcpMaxResultBytes);
@@ -115,16 +116,16 @@ export class RuntimeConfig {
    * no connection step, so its presence here is the entire configuration story.
    */
   emailCredentials(): EmailCredentials | undefined {
-    const address = readEnv('AGENTS_AUTOMATIONS_EMAIL_ADDRESS');
-    const appPassword = readEnv('AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD');
+    const address = readEnv('LEAFI_EMAIL_ADDRESS');
+    const appPassword = readEnv('LEAFI_EMAIL_APP_PASSWORD');
     if (!address || !appPassword) {
       return undefined;
     }
     return {
       address,
       appPassword,
-      imapHost: readEnv('AGENTS_AUTOMATIONS_EMAIL_IMAP_HOST') ?? DEFAULT_IMAP_HOST,
-      imapPort: readInt('AGENTS_AUTOMATIONS_EMAIL_IMAP_PORT', DEFAULT_IMAP_PORT),
+      imapHost: readEnv('LEAFI_EMAIL_IMAP_HOST') ?? DEFAULT_IMAP_HOST,
+      imapPort: readInt('LEAFI_EMAIL_IMAP_PORT', DEFAULT_IMAP_PORT),
     };
   }
 
@@ -152,11 +153,32 @@ export function readEnv(name: string): string | undefined {
 }
 
 export function resolveDataDir(override?: string): string {
-  const configured = override ?? readEnv('DATA_DIR') ?? readEnv('AGENTS_AUTOMATIONS_HOME');
+  const configured = override ?? readEnv('DATA_DIR') ?? readEnv('LEAFI_HOME');
   if (!configured) {
-    return path.join(os.homedir(), '.agents-automations');
+    return defaultDataDir();
   }
   return path.isAbsolute(configured) ? configured : path.resolve(process.cwd(), configured);
+}
+
+/**
+ * `~/.leafi`, or the folder an install from before the rename left at
+ * `~/.agents-automations` while `~/.leafi` does not exist yet, so its settings,
+ * saved flows and runs are not left behind. An empty old folder holds nothing
+ * to keep, so it is ignored. The installer moves that folder.
+ */
+function defaultDataDir(): string {
+  const current = path.join(os.homedir(), '.leafi');
+  // Kept here rather than imported from legacy-names, which imports this module.
+  const legacy = path.join(os.homedir(), '.agents-automations');
+  return !fs.existsSync(current) && hasEntries(legacy) ? legacy : current;
+}
+
+function hasEntries(dir: string): boolean {
+  try {
+    return fs.readdirSync(dir).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 function readInt(name: string, fallback: number): number {

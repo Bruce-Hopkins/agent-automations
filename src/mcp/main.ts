@@ -4,6 +4,7 @@ import { FlowLibrary } from '../app/flow-library';
 import { FlowService } from '../app/flow-service';
 import { RunService } from '../app/run-service';
 import { disableImplicitTracing, loadEnvironment } from '../config/env';
+import { adoptLegacyEnv } from '../config/legacy-names';
 import { RuntimeConfig } from '../config/runtime-config';
 import { EmailService } from '../email/email-service';
 import { ModelFactory } from '../providers/model-factory';
@@ -32,22 +33,22 @@ interface McpArgs {
   version: boolean;
 }
 
-const HELP = `agents-automations - run automations made of linked LLM agents, and serve them to an MCP client
+const HELP = `leafi - run automations made of linked LLM agents, and serve them to an MCP client
 
-Installed, this is ~/.agents-automations/server.mjs, and the installer links the
-agents-automations command to it; from a clone, it is agents-automations-mcp.
+Installed, this is ~/.leafi/server.mjs, and the installer links the
+leafi command to it; from a clone, it is leafi-mcp.
 
 Usage:
-  agents-automations <validate|schema|graph|run|runs|providers> [flags]
-                      Work with flows; "agents-automations <command> --help"
+  leafi <validate|schema|graph|run|runs|providers> [flags]
+                      Work with flows; "leafi <command> --help"
                       shows each command's flags.
-  agents-automations --transport stdio [--env-file <path>] [--data-dir <path>] [--no-env]
+  leafi --transport stdio [--env-file <path>] [--data-dir <path>] [--no-env]
                       Serve flows to an MCP client.
-  agents-automations init [--env-file <path>]
-  agents-automations settings [--allow <list>] [--deny <list>] [--json] [--env-file <path>]
-  agents-automations --version
+  leafi init [--env-file <path>]
+  leafi settings [--allow <list>] [--deny <list>] [--json] [--env-file <path>]
+  leafi --version
 
-Without the command on your PATH, "node ~/.agents-automations/server.mjs" takes
+Without the command on your PATH, "node ~/.leafi/server.mjs" takes
 the same arguments.
 
 stdio is the only transport in this release. stdout carries MCP JSON-RPC;
@@ -57,13 +58,13 @@ init is the setup the installer runs. It shows a checklist of the agents on
 this machine (Hermes, Claude Code, Claude Desktop, Cursor) and installs the
 server only into the ones you tick. Then it asks for a provider API key (input
 hidden) and which tools flows may use, and saves them where they are read:
-~/.agents-automations/.env, for this command and every other client, and
+~/.leafi/.env, for this command and every other client, and
 Hermes's .env too when you tick Hermes; or only --env-file. It needs a terminal;
 without one it changes nothing.
 
 settings changes only the permissions, so nobody has to edit a file by hand. It
 changes every file in use: Hermes's when the plugin is installed, and
-~/.agents-automations/.env when it exists or Hermes has no plugin. In a terminal it
+~/.leafi/.env when it exists or Hermes has no plugin. In a terminal it
 shows a checklist of what flows may use now; with --allow or --deny (web,
 write, bash, email, mcp, flow-paths, or all) it asks nothing, and --deny
 wins over --allow. Off a terminal with neither flag it only prints the
@@ -73,7 +74,7 @@ restart your MCP client.
 
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);
-  // The installed file is also the agents-automations command, so the flow
+  // The installed file is also the leafi command, so the flow
   // commands run exactly as they do in the CLI.
   if (isFlowCommand(argv)) {
     await runCli(argv);
@@ -92,6 +93,9 @@ async function main(): Promise<void> {
     process.exitCode = 3;
     return;
   }
+  // init and settings find the data directory before any file is loaded, so a
+  // home folder set under the old name is read here.
+  adoptLegacyEnv();
   if (argv[0] === 'init') {
     const init = parseInitArgs(argv.slice(1));
     if (init.help) {
@@ -280,6 +284,6 @@ function requireValue(name: string, value: string | undefined): string {
 }
 
 main().catch((error: unknown) => {
-  process.stderr.write(`[agents-automations-mcp] fatal: ${error instanceof Error ? error.message : String(error)}\n`);
+  process.stderr.write(`[leafi-mcp] fatal: ${error instanceof Error ? error.message : String(error)}\n`);
   process.exitCode = 1;
 });

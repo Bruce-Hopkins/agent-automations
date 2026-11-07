@@ -20,7 +20,7 @@ test.after(() => {
 });
 
 async function workspace(): Promise<Workspace> {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'agents-automations-output-test-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'leafi-output-test-'));
   roots.push(root);
   return Workspace.open(root);
 }

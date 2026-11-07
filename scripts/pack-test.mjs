@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { version } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-const work = fs.mkdtempSync(path.join(os.tmpdir(), 'agents-automations-pack-test-'));
+const work = fs.mkdtempSync(path.join(os.tmpdir(), 'leafi-pack-test-'));
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 function run(command, args, options = {}) {
@@ -44,21 +44,21 @@ try {
   run(npm, ['install', '--no-audit', '--no-fund', '--ignore-scripts', path.join(work, filename)], { cwd: install });
 
   const bin = path.join(install, 'node_modules', '.bin');
-  const cli = path.join(bin, process.platform === 'win32' ? 'agents-automations.cmd' : 'agents-automations');
-  const mcp = path.join(bin, process.platform === 'win32' ? 'agents-automations-mcp.cmd' : 'agents-automations-mcp');
-  const env = { ...process.env, AGENTS_AUTOMATIONS_HOME: path.join(work, 'home') };
+  const cli = path.join(bin, process.platform === 'win32' ? 'leafi.cmd' : 'leafi');
+  const mcp = path.join(bin, process.platform === 'win32' ? 'leafi-mcp.cmd' : 'leafi-mcp');
+  const env = { ...process.env, LEAFI_HOME: path.join(work, 'home') };
   const inInstall = { cwd: install, env };
 
-  check(run(cli, ['--help'], inInstall).includes('agents-automations <command>'), 'agents-automations --help');
-  check(run(cli, ['--version'], inInstall).trim() === version, `agents-automations --version prints ${version}`);
+  check(run(cli, ['--help'], inInstall).includes('leafi <command>'), 'leafi --help');
+  check(run(cli, ['--version'], inInstall).trim() === version, `leafi --version prints ${version}`);
   const example = run(cli, ['schema', 'example'], inInstall);
   const validation = JSON.parse(run(cli, ['validate', '--graph', '-'], { ...inInstall, input: example }));
-  check(validation.ok === true, 'agents-automations schema example | agents-automations validate --graph -');
+  check(validation.ok === true, 'leafi schema example | leafi validate --graph -');
   const setup = JSON.parse(run(cli, ['init', '--yes'], { ...inInstall, input: '' }));
-  check(setup.envFileStatus === 'created' && setup.flowStatus === 'created', 'agents-automations init writes the settings file and a starter flow');
+  check(setup.envFileStatus === 'created' && setup.flowStatus === 'created', 'leafi init writes the settings file and a starter flow');
   check(JSON.parse(run(cli, ['validate', '--graph', 'flow.json'], inInstall)).ok === true, 'the starter flow validates');
-  check(run(mcp, ['--help'], inInstall).includes('agents-automations-mcp'), 'agents-automations-mcp --help');
-  check(run(mcp, ['--version'], inInstall).trim() === version, `agents-automations-mcp --version prints ${version}`);
+  check(run(mcp, ['--help'], inInstall).includes('leafi-mcp'), 'leafi-mcp --help');
+  check(run(mcp, ['--version'], inInstall).trim() === version, `leafi-mcp --version prints ${version}`);
 
   process.stderr.write(`\nThe packed package works (${filename}).\n`);
 } finally {

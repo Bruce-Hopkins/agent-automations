@@ -37,7 +37,7 @@ export interface McpClient {
 
 const JSONRPC_VERSION = '2.0';
 const PROTOCOL_VERSION = '2025-06-18';
-const CLIENT_INFO = { name: 'agents-automations', version: VERSION };
+const CLIENT_INFO = { name: 'leafi', version: VERSION };
 const STDERR_TAIL_CHARS = 2000;
 const CLOSE_GRACE_MS = 3000;
 

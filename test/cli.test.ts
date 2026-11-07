@@ -31,7 +31,7 @@ function run(args: string[], options: { env?: NodeJS.ProcessEnv } = {}) {
 }
 
 function tempDir(): string {
-  return makeTempDir('agents-automations-test-');
+  return makeTempDir('leafi-test-');
 }
 
 test('schema example validates with exit 0', () => {

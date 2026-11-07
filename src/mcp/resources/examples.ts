@@ -4,7 +4,7 @@ import { EXAMPLE_FLOW } from '../../app/flow-schema';
 export function registerExampleResource(server: McpServer): void {
   server.registerResource(
     'example-flow',
-    'agents-automations://examples/example',
+    'leafi://examples/example',
     {
       title: 'Runnable example flow',
       description: 'A two-node flow that passes validate_flow.',

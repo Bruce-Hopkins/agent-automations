@@ -19,7 +19,7 @@ const PROVIDER_KEYS = ['OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GOOGLE_API_KEY', 
 
 /** A temp folder to run in, holding its own data directory under `home/`. */
 function tempDir(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'agents-automations-init-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'leafi-init-'));
   tempDirs.push(dir);
   return dir;
 }

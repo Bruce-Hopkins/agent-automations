@@ -3,7 +3,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { childEnvironment } from '../src/tools/environment';
 
-const SECRETS = ['OPENAI_API_KEY', 'AWS_SECRET_ACCESS_KEY', 'AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD'];
+const SECRETS = ['OPENAI_API_KEY', 'AWS_SECRET_ACCESS_KEY', 'LEAFI_EMAIL_APP_PASSWORD'];
 
 function withEnv(names: Record<string, string | undefined>, run: () => void): void {
   const previous = new Map(Object.keys(names).map((name) => [name, process.env[name]]));
@@ -32,7 +32,7 @@ test('the child environment excludes host secrets', () => {
     {
       OPENAI_API_KEY: 'sk-live',
       AWS_SECRET_ACCESS_KEY: 'aws-live',
-      AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD: 'mail-live',
+      LEAFI_EMAIL_APP_PASSWORD: 'mail-live',
       PATH: '/usr/bin:/bin',
     },
     () => {
@@ -57,7 +57,7 @@ test('only names in AGENT_ENV_PASSTHROUGH are forwarded beyond the allowlist', (
 });
 
 test('a home directory rewrites HOME and the temp directories', () => {
-  const home = path.join('/tmp', 'agents-automations-env-test');
+  const home = path.join('/tmp', 'leafi-env-test');
   const env = childEnvironment({ home });
 
   assert.equal(env.HOME, home);

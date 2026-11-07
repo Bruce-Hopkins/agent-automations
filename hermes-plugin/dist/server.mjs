@@ -2281,7 +2281,7 @@ var require_atomic_sleep = __commonJS({
 var require_sonic_boom = __commonJS({
   "node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js"(exports, module) {
     "use strict";
-    var fs19 = __require("fs");
+    var fs20 = __require("fs");
     var EventEmitter2 = __require("events");
     var inherits = __require("util").inherits;
     var path28 = __require("path");
@@ -2338,20 +2338,20 @@ var require_sonic_boom = __commonJS({
       const mode = sonic.mode;
       if (sonic.sync) {
         try {
-          if (sonic.mkdir) fs19.mkdirSync(path28.dirname(file2), { recursive: true });
-          const fd = fs19.openSync(file2, flags2, mode);
+          if (sonic.mkdir) fs20.mkdirSync(path28.dirname(file2), { recursive: true });
+          const fd = fs20.openSync(file2, flags2, mode);
           fileOpened(null, fd);
         } catch (err) {
           fileOpened(err);
           throw err;
         }
       } else if (sonic.mkdir) {
-        fs19.mkdir(path28.dirname(file2), { recursive: true }, (err) => {
+        fs20.mkdir(path28.dirname(file2), { recursive: true }, (err) => {
           if (err) return fileOpened(err);
-          fs19.open(file2, flags2, mode, fileOpened);
+          fs20.open(file2, flags2, mode, fileOpened);
         });
       } else {
-        fs19.open(file2, flags2, mode, fileOpened);
+        fs20.open(file2, flags2, mode, fileOpened);
       }
     }
     function SonicBoom(opts) {
@@ -2392,8 +2392,8 @@ var require_sonic_boom = __commonJS({
         this.flush = flushBuffer;
         this.flushSync = flushBufferSync;
         this._actualWrite = actualWriteBuffer;
-        fsWriteSync = () => fs19.writeSync(this.fd, this._writingBuf);
-        fsWrite = () => fs19.write(this.fd, this._writingBuf, this.release);
+        fsWriteSync = () => fs20.writeSync(this.fd, this._writingBuf);
+        fsWrite = () => fs20.write(this.fd, this._writingBuf, this.release);
       } else if (contentMode === void 0 || contentMode === kContentModeUtf8) {
         this._writingBuf = "";
         this.write = write;
@@ -2402,15 +2402,15 @@ var require_sonic_boom = __commonJS({
         this._actualWrite = actualWrite;
         fsWriteSync = () => {
           if (Buffer.isBuffer(this._writingBuf)) {
-            return fs19.writeSync(this.fd, this._writingBuf);
+            return fs20.writeSync(this.fd, this._writingBuf);
           }
-          return fs19.writeSync(this.fd, this._writingBuf, "utf8");
+          return fs20.writeSync(this.fd, this._writingBuf, "utf8");
         };
         fsWrite = () => {
           if (Buffer.isBuffer(this._writingBuf)) {
-            return fs19.write(this.fd, this._writingBuf, this.release);
+            return fs20.write(this.fd, this._writingBuf, this.release);
           }
-          return fs19.write(this.fd, this._writingBuf, "utf8", this.release);
+          return fs20.write(this.fd, this._writingBuf, "utf8", this.release);
         };
       } else {
         throw new Error(`SonicBoom supports "${kContentModeUtf8}" and "${kContentModeBuffer}", but passed ${contentMode}`);
@@ -2467,7 +2467,7 @@ var require_sonic_boom = __commonJS({
           }
         }
         if (this._fsync) {
-          fs19.fsyncSync(this.fd);
+          fs20.fsyncSync(this.fd);
         }
         const len = this._len;
         if (this._reopening) {
@@ -2581,7 +2581,7 @@ var require_sonic_boom = __commonJS({
       const onDrain = () => {
         if (!this._fsync) {
           try {
-            fs19.fsync(this.fd, (err) => {
+            fs20.fsync(this.fd, (err) => {
               this._flushPending = false;
               cb(err);
             });
@@ -2683,7 +2683,7 @@ var require_sonic_boom = __commonJS({
       const fd = this.fd;
       this.once("ready", () => {
         if (fd !== this.fd) {
-          fs19.close(fd, (err) => {
+          fs20.close(fd, (err) => {
             if (err) {
               return this.emit("error", err);
             }
@@ -2732,7 +2732,7 @@ var require_sonic_boom = __commonJS({
           buf = this._bufs[0];
         }
         try {
-          const n3 = Buffer.isBuffer(buf) ? fs19.writeSync(this.fd, buf) : fs19.writeSync(this.fd, buf, "utf8");
+          const n3 = Buffer.isBuffer(buf) ? fs20.writeSync(this.fd, buf) : fs20.writeSync(this.fd, buf, "utf8");
           const releasedBufObj = releaseWritingBuf(buf, this._len, n3);
           buf = releasedBufObj.writingBuf;
           this._len = releasedBufObj.len;
@@ -2748,7 +2748,7 @@ var require_sonic_boom = __commonJS({
         }
       }
       try {
-        fs19.fsyncSync(this.fd);
+        fs20.fsyncSync(this.fd);
       } catch {
       }
     }
@@ -2769,7 +2769,7 @@ var require_sonic_boom = __commonJS({
           buf = mergeBuf(this._bufs[0], this._lens[0]);
         }
         try {
-          const n3 = fs19.writeSync(this.fd, buf);
+          const n3 = fs20.writeSync(this.fd, buf);
           buf = buf.subarray(n3);
           this._len = Math.max(this._len - n3, 0);
           if (buf.length <= 0) {
@@ -2797,13 +2797,13 @@ var require_sonic_boom = __commonJS({
       this._writingBuf = this._writingBuf.length ? this._writingBuf : this._bufs.shift() || "";
       if (this.sync) {
         try {
-          const written = Buffer.isBuffer(this._writingBuf) ? fs19.writeSync(this.fd, this._writingBuf) : fs19.writeSync(this.fd, this._writingBuf, "utf8");
+          const written = Buffer.isBuffer(this._writingBuf) ? fs20.writeSync(this.fd, this._writingBuf) : fs20.writeSync(this.fd, this._writingBuf, "utf8");
           release(null, written);
         } catch (err) {
           release(err);
         }
       } else {
-        fs19.write(this.fd, this._writingBuf, release);
+        fs20.write(this.fd, this._writingBuf, release);
       }
     }
     function actualWriteBuffer() {
@@ -2812,7 +2812,7 @@ var require_sonic_boom = __commonJS({
       this._writingBuf = this._writingBuf.length ? this._writingBuf : mergeBuf(this._bufs.shift(), this._lens.shift());
       if (this.sync) {
         try {
-          const written = fs19.writeSync(this.fd, this._writingBuf);
+          const written = fs20.writeSync(this.fd, this._writingBuf);
           release(null, written);
         } catch (err) {
           release(err);
@@ -2821,7 +2821,7 @@ var require_sonic_boom = __commonJS({
         if (kCopyBuffer) {
           this._writingBuf = Buffer.from(this._writingBuf);
         }
-        fs19.write(this.fd, this._writingBuf, release);
+        fs20.write(this.fd, this._writingBuf, release);
       }
     }
     function actualClose(sonic) {
@@ -2837,12 +2837,12 @@ var require_sonic_boom = __commonJS({
       sonic._lens = [];
       assert4(typeof sonic.fd === "number", `sonic.fd must be a number, got ${typeof sonic.fd}`);
       try {
-        fs19.fsync(sonic.fd, closeWrapped);
+        fs20.fsync(sonic.fd, closeWrapped);
       } catch {
       }
       function closeWrapped() {
         if (sonic.fd !== 1 && sonic.fd !== 2) {
-          fs19.close(sonic.fd, done);
+          fs20.close(sonic.fd, done);
         } else {
           done();
         }
@@ -36884,7 +36884,7 @@ var node_exports = {};
 __export(node_exports, {
   child_process: () => child_process,
   crypto: () => crypto2,
-  fs: () => fs5,
+  fs: () => fs6,
   os: () => os2,
   path: () => path10,
   stream: () => stream,
@@ -36892,7 +36892,7 @@ __export(node_exports, {
 });
 import * as child_process from "node:child_process";
 import * as crypto2 from "node:crypto";
-import * as fs5 from "node:fs";
+import * as fs6 from "node:fs";
 import * as os2 from "node:os";
 import * as path10 from "node:path";
 import * as stream from "node:stream";
@@ -36963,12 +36963,12 @@ function redactSensitive(body) {
 async function checkCredentialsFileSafety(path28, onWarn = (m) => console.warn(`anthropic-sdk: ${m}`)) {
   if (typeof process === "undefined" || process.platform === "win32")
     return;
-  const { fs: fs19 } = await Promise.resolve().then(() => (init_node(), node_exports));
+  const { fs: fs20 } = await Promise.resolve().then(() => (init_node(), node_exports));
   let resolved = path28;
   let st;
   try {
-    resolved = await fs19.promises.realpath(path28);
-    st = await fs19.promises.stat(resolved);
+    resolved = await fs20.promises.realpath(path28);
+    st = await fs20.promises.stat(resolved);
   } catch {
     return;
   }
@@ -36984,26 +36984,26 @@ async function checkCredentialsFileSafety(path28, onWarn = (m) => console.warn(`
   }
 }
 async function writeCredentialsFileAtomic(targetPath, data) {
-  const { fs: fs19, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
+  const { fs: fs20, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
   const dir = path28.dirname(targetPath);
-  await fs19.promises.mkdir(dir, { recursive: true, mode: 448 });
+  await fs20.promises.mkdir(dir, { recursive: true, mode: 448 });
   const tmpPath = `${targetPath}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
   try {
-    const fh = await fs19.promises.open(tmpPath, "w", 384);
+    const fh = await fs20.promises.open(tmpPath, "w", 384);
     try {
       await fh.writeFile(JSON.stringify(data, null, 2));
       await fh.sync();
     } finally {
       await fh.close();
     }
-    await fs19.promises.rename(tmpPath, targetPath);
+    await fs20.promises.rename(tmpPath, targetPath);
   } catch (err) {
-    await fs19.promises.unlink(tmpPath).catch(() => {
+    await fs20.promises.unlink(tmpPath).catch(() => {
     });
     throw err;
   }
   try {
-    const dirFh = await fs19.promises.open(dir, "r");
+    const dirFh = await fs20.promises.open(dir, "r");
     try {
       await dirFh.sync();
     } finally {
@@ -37405,11 +37405,11 @@ var init_credentials = __esm({
         return null;
       }
       validateProfileName(profileName);
-      const { fs: fs19, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
+      const { fs: fs20, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
       const configPath = path28.join(rootConfigPath, "configs", `${profileName}.json`);
       let configRaw;
       try {
-        configRaw = await fs19.promises.readFile(configPath, "utf-8");
+        configRaw = await fs20.promises.readFile(configPath, "utf-8");
       } catch (err) {
         if (err?.code !== "ENOENT") {
           throw new Error(`failed to read config file ${configPath}: ${err}`);
@@ -37537,10 +37537,10 @@ var init_credentials = __esm({
       if (profileName) {
         return profileName;
       }
-      const { fs: fs19, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
+      const { fs: fs20, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
       const filePath = path28.join(rootConfigPath, "active_config");
       try {
-        return (await fs19.promises.readFile(filePath, "utf-8")).trim() || "default";
+        return (await fs20.promises.readFile(filePath, "utf-8")).trim() || "default";
       } catch (err) {
         if (err?.code !== "ENOENT") {
           throw new Error(`failed to read ${filePath}: ${err}`);
@@ -37557,10 +37557,10 @@ function identityTokenFromFile(path28) {
     throw new AnthropicError("Identity token file path is empty");
   }
   return async () => {
-    const { fs: fs19 } = await Promise.resolve().then(() => (init_node(), node_exports));
+    const { fs: fs20 } = await Promise.resolve().then(() => (init_node(), node_exports));
     let content;
     try {
-      content = await fs19.promises.readFile(path28, "utf-8");
+      content = await fs20.promises.readFile(path28, "utf-8");
     } catch (err) {
       throw new AnthropicError(`Failed to read identity token file at ${path28}: ${err}`);
     }
@@ -37651,11 +37651,11 @@ var init_oidc_federation = __esm({
 // node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/lib/credentials/user-oauth.mjs
 function userOAuthProvider(config2) {
   return async (opts) => {
-    const { fs: fs19 } = await Promise.resolve().then(() => (init_node(), node_exports));
+    const { fs: fs20 } = await Promise.resolve().then(() => (init_node(), node_exports));
     await checkCredentialsFileSafety(config2.credentialsPath, config2.onSafetyWarning);
     let raw;
     try {
-      raw = await fs19.promises.readFile(config2.credentialsPath, "utf-8");
+      raw = await fs20.promises.readFile(config2.credentialsPath, "utf-8");
     } catch (err) {
       throw new WorkloadIdentityError(`Credentials file not found at ${config2.credentialsPath}: ${err}`);
     }
@@ -37827,11 +37827,11 @@ function resolveIdentityTokenProvider(auth) {
 }
 function cachedExchangeProvider(exchange, credentialsPath, onCacheWriteError, onSafetyWarning) {
   return async (opts) => {
-    const { fs: fs19 } = await Promise.resolve().then(() => (init_node(), node_exports));
+    const { fs: fs20 } = await Promise.resolve().then(() => (init_node(), node_exports));
     await checkCredentialsFileSafety(credentialsPath, onSafetyWarning);
     let existing;
     try {
-      const raw = await fs19.promises.readFile(credentialsPath, "utf-8");
+      const raw = await fs20.promises.readFile(credentialsPath, "utf-8");
       existing = JSON.parse(raw);
       const token = existing?.["access_token"];
       if (token && !opts?.forceRefresh) {
@@ -41878,11 +41878,11 @@ async function canonicalize(abs) {
   for (; ; ) {
     let real;
     try {
-      real = await fs6.realpath(prefix);
+      real = await fs7.realpath(prefix);
     } catch (realpathErr) {
       let isLink;
       try {
-        isLink = (await fs6.lstat(prefix)).isSymbolicLink();
+        isLink = (await fs7.lstat(prefix)).isSymbolicLink();
       } catch (lstatErr) {
         const code = errnoCode(lstatErr);
         if (code !== "ENOENT" && code !== "ENOTDIR")
@@ -41899,7 +41899,7 @@ async function canonicalize(abs) {
       if (++hops > MAX_SYMLINK_HOPS) {
         throw Object.assign(new Error("too many levels of symbolic links"), { code: "ELOOP" });
       }
-      prefix = path10.resolve(path10.dirname(prefix), await fs6.readlink(prefix));
+      prefix = path10.resolve(path10.dirname(prefix), await fs7.readlink(prefix));
       continue;
     }
     return tail.length ? path10.join(real, ...tail.reverse()) : real;
@@ -41923,22 +41923,22 @@ async function confineToRoot(root, p, opts) {
 async function atomicWriteFile(targetPath, content) {
   const dir = path10.dirname(targetPath);
   const tempPath = path10.join(dir, `.tmp-${process.pid}-${crypto2.randomUUID()}`);
-  const existingMode = await fs6.stat(targetPath).then((st) => st.mode & 511, () => void 0);
+  const existingMode = await fs7.stat(targetPath).then((st) => st.mode & 511, () => void 0);
   let handle;
   try {
-    handle = await fs6.open(tempPath, "wx", FILE_CREATE_MODE);
+    handle = await fs7.open(tempPath, "wx", FILE_CREATE_MODE);
     if (existingMode !== void 0)
       await handle.chmod(existingMode);
     await handle.writeFile(content, "utf-8");
     await handle.sync();
     await handle.close();
     handle = void 0;
-    await fs6.rename(tempPath, targetPath);
+    await fs7.rename(tempPath, targetPath);
   } catch (err) {
     if (handle)
       await handle.close().catch(() => {
       });
-    await fs6.unlink(tempPath).catch(() => {
+    await fs7.unlink(tempPath).catch(() => {
     });
     throw err;
   }
@@ -41968,12 +41968,12 @@ function fsErrorMessage(err, file2) {
       return `${file2}: ${code !== void 0 ? `i/o error (${code})` : "i/o error"}`;
   }
 }
-var fs6, DIR_CREATE_MODE, FILE_CREATE_MODE, MAX_SYMLINK_HOPS;
+var fs7, DIR_CREATE_MODE, FILE_CREATE_MODE, MAX_SYMLINK_HOPS;
 var init_fs_util = __esm({
   "node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/tools/agent-toolset/fs-util.mjs"() {
     init_node();
     init_ToolError();
-    fs6 = fs5.promises;
+    fs7 = fs6.promises;
     DIR_CREATE_MODE = 448;
     FILE_CREATE_MODE = 384;
     MAX_SYMLINK_HOPS = 40;
@@ -42012,8 +42012,8 @@ async function setupSkills(ctx) {
         continue;
       }
       const resp = await client2.beta.skills.versions.download(version5.id, { skill_id: skill.skill_id });
-      await fs7.rm(dest, { recursive: true, force: true });
-      await fs7.mkdir(dest, { recursive: true, mode: DIR_CREATE_MODE });
+      await fs8.rm(dest, { recursive: true, force: true });
+      await fs8.mkdir(dest, { recursive: true, mode: DIR_CREATE_MODE });
       created.push(dest);
       await extractSkillArchive(resp, dest);
       log.info("downloaded skill", {
@@ -42032,7 +42032,7 @@ async function setupSkills(ctx) {
   }
   return async () => {
     for (const dest of created) {
-      await fs7.rm(dest, { recursive: true, force: true }).catch((e) => {
+      await fs8.rm(dest, { recursive: true, force: true }).catch((e) => {
         log.warn("failed to clean up skill", { component: "agent-tool-context", dest, error: String(e) });
       });
     }
@@ -42077,7 +42077,7 @@ function classifyArchiveListing(cmd, names2, typed) {
   return { plain, special };
 }
 async function assertOnlyPlainEntries(dir) {
-  for (const entry of await fs7.readdir(dir, { withFileTypes: true })) {
+  for (const entry of await fs8.readdir(dir, { withFileTypes: true })) {
     if (entry.isDirectory())
       await assertOnlyPlainEntries(path10.join(dir, entry.name));
     else if (!entry.isFile())
@@ -42117,7 +42117,7 @@ async function extractSkillArchive(resp, dest) {
   if (!resp.body) {
     throw new AnthropicError("skill download response had no body");
   }
-  await stream.promises.pipeline(stream.Readable.fromWeb(resp.body), fs5.createWriteStream(tmp));
+  await stream.promises.pipeline(stream.Readable.fromWeb(resp.body), fs6.createWriteStream(tmp));
   const stage = path10.join(path10.dirname(dest), `.skill-stage-${process.pid}-${Date.now()}`);
   const excludeFile = path10.join(path10.dirname(dest), `.skill-exclude-${process.pid}-${Date.now()}`);
   try {
@@ -42129,22 +42129,22 @@ async function extractSkillArchive(resp, dest) {
     const { plain, special } = classifyArchiveListing(archiveCmd, names2, typed);
     assertSafeMemberNames([...plain, ...special]);
     const top = archiveTopDir(plain);
-    await fs7.mkdir(stage, { recursive: true, mode: DIR_CREATE_MODE });
+    await fs8.mkdir(stage, { recursive: true, mode: DIR_CREATE_MODE });
     if (plain.length > 0) {
       await runArchiveTool(archiveCmd, await extractArgs(archiveCmd, tmp, stage, special, excludeFile));
     }
     await assertOnlyPlainEntries(stage);
     const srcRoot = top ? path10.join(stage, top) : stage;
-    const entries = await fs7.readdir(srcRoot).catch((e) => {
+    const entries = await fs8.readdir(srcRoot).catch((e) => {
       throw errnoCode(e) === "ENOENT" ? new AnthropicError(INCONSISTENT_LISTING) : e;
     });
     for (const entry of entries) {
-      await fs7.rename(path10.join(srcRoot, entry), path10.join(dest, entry));
+      await fs8.rename(path10.join(srcRoot, entry), path10.join(dest, entry));
     }
   } finally {
-    await fs7.rm(tmp, { force: true });
-    await fs7.rm(excludeFile, { force: true });
-    await fs7.rm(stage, { recursive: true, force: true });
+    await fs8.rm(tmp, { force: true });
+    await fs8.rm(excludeFile, { force: true });
+    await fs8.rm(stage, { recursive: true, force: true });
   }
 }
 async function extractArgs(cmd, archive, stage, special, excludeFile) {
@@ -42154,11 +42154,11 @@ async function extractArgs(cmd, archive, stage, special, excludeFile) {
   }
   if (patterns.length === 0)
     return ["-xf", archive, "-C", stage];
-  await fs7.writeFile(excludeFile, patterns.join("\n") + "\n", { flag: "wx", mode: 384 });
+  await fs8.writeFile(excludeFile, patterns.join("\n") + "\n", { flag: "wx", mode: 384 });
   return ["-xf", archive, "-C", stage, "-X", excludeFile];
 }
 async function readHead(file2, n3) {
-  const handle = await fs7.open(file2, "r");
+  const handle = await fs8.open(file2, "r");
   try {
     const buf = Buffer.alloc(n3);
     const { bytesRead } = await handle.read(buf, 0, n3, 0);
@@ -42167,14 +42167,14 @@ async function readHead(file2, n3) {
     await handle.close();
   }
 }
-var fs7, execFileAsync, INCONSISTENT_LISTING, PLAIN_TYPE_CHARS;
+var fs8, execFileAsync, INCONSISTENT_LISTING, PLAIN_TYPE_CHARS;
 var init_skills = __esm({
   "node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/tools/agent-toolset/skills.mjs"() {
     init_node();
     init_error();
     init_log();
     init_fs_util();
-    fs7 = fs5.promises;
+    fs8 = fs6.promises;
     execFileAsync = util2.promisify(child_process.execFile);
     INCONSISTENT_LISTING = "skill archive listing is inconsistent; refusing to extract";
     PLAIN_TYPE_CHARS = { unzip: /* @__PURE__ */ new Set(["-", "d", "?"]), tar: /* @__PURE__ */ new Set(["-", "d", "C"]) };
@@ -42366,8 +42366,8 @@ var init_file_store = __esm({
   "node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/internal/file-store.mjs"() {
     init_node();
     init_bytes();
-    fsp = fs5.promises;
-    C = fs5.constants;
+    fsp = fs6.promises;
+    C = fs6.constants;
     OWNER_ONLY_DIR_MODE = 448;
     OWNER_ONLY_FILE_MODE = 384;
     OWNER_ONLY_EXEC_MODE = 448;
@@ -43368,7 +43368,7 @@ __export(node_exports2, {
   resolvePath: () => resolvePath,
   setupSkills: () => setupSkills
 });
-import * as fs8 from "node:fs/promises";
+import * as fs9 from "node:fs/promises";
 import * as fssync from "node:fs";
 import * as path12 from "node:path";
 import * as cp from "node:child_process";
@@ -43493,7 +43493,7 @@ function betaReadTool(ctx) {
       }
       let data;
       try {
-        const st = await fs8.stat(abs);
+        const st = await fs9.stat(abs);
         if (!st.isFile()) {
           throw new ToolError(`read: ${file_path} is not a regular file`);
         }
@@ -43505,7 +43505,7 @@ function betaReadTool(ctx) {
           const [startLine2, endLine2] = view_range;
           return await readRangeStreaming(abs, file_path, startLine2, endLine2, limit4);
         }
-        data = await fs8.readFile(abs, "utf8");
+        data = await fs9.readFile(abs, "utf8");
       } catch (e) {
         if (e instanceof ToolError)
           throw e;
@@ -43556,7 +43556,7 @@ function betaWriteTool(ctx) {
         throw new ToolError(`write: ${file_path} is inside read-only directory ${ro}`);
       }
       try {
-        await fs8.mkdir(path12.dirname(abs), { recursive: true, mode: DIR_CREATE_MODE });
+        await fs9.mkdir(path12.dirname(abs), { recursive: true, mode: DIR_CREATE_MODE });
         await atomicWriteFile(abs, content ?? "");
       } catch (e) {
         throw new ToolError(`write: ${fsErrorMessage(e, file_path)}`);
@@ -43592,7 +43592,7 @@ function betaEditTool(ctx) {
       }
       let data;
       try {
-        const st = await fs8.stat(abs);
+        const st = await fs9.stat(abs);
         if (!st.isFile()) {
           throw new ToolError(`edit: ${file_path} is not a regular file`);
         }
@@ -43600,7 +43600,7 @@ function betaEditTool(ctx) {
         if (limit4 !== null && st.size > limit4) {
           throw new ToolError(`edit: ${file_path} is ${st.size} bytes, exceeds ${limit4}-byte limit. The edit tool loads the whole file and cannot modify a file this large.`);
         }
-        data = await fs8.readFile(abs, "utf8");
+        data = await fs9.readFile(abs, "utf8");
       } catch (e) {
         if (e instanceof ToolError)
           throw e;
@@ -43668,7 +43668,7 @@ function betaGlobTool(ctx) {
           const full = path12.join(entry.parentPath, entry.name);
           let real;
           try {
-            real = await fs8.realpath(full);
+            real = await fs9.realpath(full);
           } catch {
             continue;
           }
@@ -43676,7 +43676,7 @@ function betaGlobTool(ctx) {
             continue;
           let mtime = 0;
           try {
-            mtime = (await fs8.stat(full)).mtimeMs;
+            mtime = (await fs9.stat(full)).mtimeMs;
           } catch {
           }
           matches.push({ path: full, mtime });
@@ -43768,7 +43768,7 @@ async function runWalkGrep(pattern, root, signal) {
     hits.push(line);
     return true;
   };
-  const stat4 = await fs8.stat(root).catch(() => null);
+  const stat4 = await fs9.stat(root).catch(() => null);
   if (stat4?.isFile()) {
     await grepFile(root, re, push2);
   } else {
@@ -43807,7 +43807,7 @@ async function walk2(root, rel, fn, signal) {
       return false;
     let entries;
     try {
-      entries = await fs8.readdir(path12.join(root, rel2), { withFileTypes: true });
+      entries = await fs9.readdir(path12.join(root, rel2), { withFileTypes: true });
     } catch {
       return true;
     }
@@ -43836,7 +43836,7 @@ async function findRg() {
   for (const d of dirs) {
     const candidate = path12.join(d, "rg");
     try {
-      await fs8.access(candidate, fssync.constants.X_OK);
+      await fs9.access(candidate, fssync.constants.X_OK);
       return candidate;
     } catch {
     }
@@ -43870,7 +43870,7 @@ var init_node2 = __esm({
       }
     };
     ANSI_RE = /\x1b\[[0-9;?]*[ -/]*[@-~]/g;
-    fsGlob = fs8.glob;
+    fsGlob = fs9.glob;
     BashSession = /* @__PURE__ */ (() => {
       class BashSession2 {
         constructor(dir, env = scrubbedShellEnv()) {
@@ -86817,12 +86817,12 @@ var require_dist4 = __commonJS({
         throw new Error(`Unknown format "${name2}"`);
       return f3;
     };
-    function addFormats(ajv, list3, fs19, exportName) {
+    function addFormats(ajv, list3, fs20, exportName) {
       var _a9;
       var _b;
       (_a9 = (_b = ajv.opts.code).formats) !== null && _a9 !== void 0 ? _a9 : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f3 of list3)
-        ajv.addFormat(f3, fs19[f3]);
+        ajv.addFormat(f3, fs20[f3]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -87806,13 +87806,13 @@ function findCycle(graph) {
 var EmailError = class extends Error {
 };
 var EmailNotConfiguredError = class extends EmailError {
-  constructor(message = "No mailbox is configured. Set AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD in the environment.") {
+  constructor(message = "No mailbox is configured. Set LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD in the environment.") {
     super(message);
     this.name = "EmailNotConfiguredError";
   }
 };
 var EmailAuthError = class extends EmailError {
-  constructor(message = "The mailbox rejected the login. With Gmail, check that 2-Step Verification is on and that AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD is a current app password \u2014 Google does not accept the account password over IMAP.") {
+  constructor(message = "The mailbox rejected the login. With Gmail, check that 2-Step Verification is on and that LEAFI_EMAIL_APP_PASSWORD is a current app password \u2014 Google does not accept the account password over IMAP.") {
     super(message);
     this.name = "EmailAuthError";
   }
@@ -137589,12 +137589,12 @@ function killProcessTree(child, signal) {
 }
 
 // src/version.ts
-var VERSION2 = true ? "0.0.2" : readPackageVersion();
+var VERSION2 = true ? "0.0.3" : readPackageVersion();
 
 // src/tools/mcp/mcp-client.ts
 var JSONRPC_VERSION = "2.0";
 var PROTOCOL_VERSION = "2025-06-18";
-var CLIENT_INFO = { name: "agents-automations", version: VERSION2 };
+var CLIENT_INFO = { name: "leafi", version: VERSION2 };
 var STDERR_TAIL_CHARS = 2e3;
 var CLOSE_GRACE_MS = 3e3;
 async function connectMcpClient(options) {
@@ -137928,7 +137928,7 @@ async function mcpPreflight(nodes, options) {
     return [];
   }
   const labels = needing.map((node2) => `"${node2.label}"`).join(", ");
-  const repair = `Set AGENTS_AUTOMATIONS_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${options.command}).`;
+  const repair = `Set LEAFI_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${options.command}).`;
   try {
     const tools3 = await listMcpTools({
       command: options.command,
@@ -137939,7 +137939,7 @@ async function mcpPreflight(nodes, options) {
     if (!options.allowlist.some((name2) => offered.has(name2))) {
       const available = tools3.map((tool2) => tool2.name).join(", ");
       return [
-        `${labels} need the MCP server, but it offers none of the tools they may use (${options.allowlist.join(", ")}). Set AGENTS_AUTOMATIONS_MCP_TOOLS to a subset of: ${available}.`
+        `${labels} need the MCP server, but it offers none of the tools they may use (${options.allowlist.join(", ")}). Set LEAFI_MCP_TOOLS to a subset of: ${available}.`
       ];
     }
     return [];
@@ -138029,6 +138029,7 @@ var import_dotenv = __toESM(require_dist2());
 import path9 from "node:path";
 
 // src/config/runtime-config.ts
+import fs5 from "node:fs";
 import os from "node:os";
 import path8 from "node:path";
 
@@ -138143,10 +138144,10 @@ var RuntimeConfig = class {
     this.toolOutputStepLimitBytes = readInt("TOOL_OUTPUT_STEP_LIMIT_BYTES", DEFAULTS.toolOutputStepLimitBytes);
     this.webFetchTimeoutMs = readInt("WEB_FETCH_TIMEOUT_MS", DEFAULTS.webFetchTimeoutMs);
     this.webFetchLimitBytes = readInt("WEB_FETCH_LIMIT_BYTES", DEFAULTS.webFetchLimitBytes);
-    this.emailTimeoutMs = readInt("AGENTS_AUTOMATIONS_EMAIL_TIMEOUT_MS", DEFAULTS.emailTimeoutMs);
-    this.mcpCommand = readEnv2("AGENTS_AUTOMATIONS_MCP_COMMAND") ?? DEFAULT_MCP_COMMAND;
-    this.mcpTimeoutMs = readInt("AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS", DEFAULTS.mcpTimeoutMs);
-    this.mcpTools = readList("AGENTS_AUTOMATIONS_MCP_TOOLS", DEFAULT_MCP_TOOLS);
+    this.emailTimeoutMs = readInt("LEAFI_EMAIL_TIMEOUT_MS", DEFAULTS.emailTimeoutMs);
+    this.mcpCommand = readEnv2("LEAFI_MCP_COMMAND") ?? DEFAULT_MCP_COMMAND;
+    this.mcpTimeoutMs = readInt("LEAFI_MCP_TIMEOUT_MS", DEFAULTS.mcpTimeoutMs);
+    this.mcpTools = readList("LEAFI_MCP_TOOLS", DEFAULT_MCP_TOOLS);
     this.mcpMaxConcurrentRuns = readInt("MCP_MAX_CONCURRENT_RUNS", DEFAULTS.mcpMaxConcurrentRuns);
     this.mcpMaxFlowBytes = readInt("MCP_MAX_FLOW_BYTES", DEFAULTS.mcpMaxFlowBytes);
     this.mcpMaxResultBytes = readInt("MCP_MAX_RESULT_BYTES", DEFAULTS.mcpMaxResultBytes);
@@ -138163,16 +138164,16 @@ var RuntimeConfig = class {
    * no connection step, so its presence here is the entire configuration story.
    */
   emailCredentials() {
-    const address = readEnv2("AGENTS_AUTOMATIONS_EMAIL_ADDRESS");
-    const appPassword = readEnv2("AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD");
+    const address = readEnv2("LEAFI_EMAIL_ADDRESS");
+    const appPassword = readEnv2("LEAFI_EMAIL_APP_PASSWORD");
     if (!address || !appPassword) {
       return void 0;
     }
     return {
       address,
       appPassword,
-      imapHost: readEnv2("AGENTS_AUTOMATIONS_EMAIL_IMAP_HOST") ?? DEFAULT_IMAP_HOST,
-      imapPort: readInt("AGENTS_AUTOMATIONS_EMAIL_IMAP_PORT", DEFAULT_IMAP_PORT)
+      imapHost: readEnv2("LEAFI_EMAIL_IMAP_HOST") ?? DEFAULT_IMAP_HOST,
+      imapPort: readInt("LEAFI_EMAIL_IMAP_PORT", DEFAULT_IMAP_PORT)
     };
   }
   workspaceFor(runId) {
@@ -138191,11 +138192,23 @@ function readEnv2(name2) {
   return value && !UNRESOLVED_ENV_PLACEHOLDER.test(value) ? value : void 0;
 }
 function resolveDataDir(override) {
-  const configured = override ?? readEnv2("DATA_DIR") ?? readEnv2("AGENTS_AUTOMATIONS_HOME");
+  const configured = override ?? readEnv2("DATA_DIR") ?? readEnv2("LEAFI_HOME");
   if (!configured) {
-    return path8.join(os.homedir(), ".agents-automations");
+    return defaultDataDir();
   }
   return path8.isAbsolute(configured) ? configured : path8.resolve(process.cwd(), configured);
+}
+function defaultDataDir() {
+  const current = path8.join(os.homedir(), ".leafi");
+  const legacy = path8.join(os.homedir(), ".agents-automations");
+  return !fs5.existsSync(current) && hasEntries(legacy) ? legacy : current;
+}
+function hasEntries(dir) {
+  try {
+    return fs5.readdirSync(dir).length > 0;
+  } catch {
+    return false;
+  }
 }
 function readInt(name2, fallback) {
   const raw = readEnv2(name2);
@@ -138224,13 +138237,54 @@ function readList(name2, fallback) {
   return items.length > 0 ? items : fallback;
 }
 
+// src/config/legacy-names.ts
+var LEGACY_ENV_PREFIX = "AGENTS_AUTOMATIONS_";
+var ENV_PREFIX = "LEAFI_";
+var LEGACY_SERVER_NAME = "agents-automations";
+var warned = /* @__PURE__ */ new Set();
+function currentEnvName(legacyName) {
+  return legacyName.startsWith(LEGACY_ENV_PREFIX) ? ENV_PREFIX + legacyName.slice(LEGACY_ENV_PREFIX.length) : void 0;
+}
+function adoptLegacyEnv(write = (text) => process.stderr.write(text)) {
+  const adopted = [];
+  for (const legacy of Object.keys(process.env)) {
+    const current = currentEnvName(legacy);
+    const value = readEnv2(legacy);
+    if (!current || value === void 0 || readEnv2(current) !== void 0) {
+      continue;
+    }
+    process.env[current] = value;
+    adopted.push(legacy);
+  }
+  const fresh = adopted.filter((name2) => !warned.has(name2));
+  if (fresh.length > 0) {
+    fresh.forEach((name2) => warned.add(name2));
+    const pairs = fresh.map((name2) => `${name2} \u2192 ${currentEnvName(name2)}`).join(", ");
+    write(`leafi: warning: read old setting names, which still work for now. Rename them: ${pairs}.
+`);
+  }
+  return adopted;
+}
+function renameLegacyEnvKeys(content) {
+  const assigned = (name2) => new RegExp(`^[ \\t]*(?:export[ \\t]+)?${name2}[ \\t]*=`, "m").test(content);
+  return content.replace(
+    /^([ \t]*(?:export[ \t]+)?)(AGENTS_AUTOMATIONS_[A-Za-z0-9_]+)([ \t]*=)/gm,
+    (line, lead, legacy, equals) => {
+      const current = currentEnvName(legacy);
+      return assigned(current) ? line : `${lead}${current}${equals}`;
+    }
+  );
+}
+
 // src/config/env.ts
 function loadEnvironment(options = {}) {
+  adoptLegacyEnv();
   const file2 = options.envFile ? path9.resolve(process.cwd(), options.envFile) : path9.join(resolveDataDir(options.dataDir), ".env");
   (0, import_dotenv.config)({ path: file2, quiet: true });
+  adoptLegacyEnv();
   return file2;
 }
-var TRACING_OPT_IN = "AGENTS_AUTOMATIONS_LANGSMITH_TRACING";
+var TRACING_OPT_IN = "LEAFI_LANGSMITH_TRACING";
 var TRACING_SWITCHES = [
   "LANGSMITH_TRACING_V2",
   "LANGCHAIN_TRACING_V2",
@@ -194044,7 +194098,7 @@ function numberOr(value) {
 // src/tools/node-toolkit.ts
 var import_undici2 = __toESM(require_undici());
 import { spawn as spawn4 } from "node:child_process";
-import fs11 from "node:fs/promises";
+import fs12 from "node:fs/promises";
 import path16 from "node:path";
 
 // src/tools/text.ts
@@ -194080,7 +194134,7 @@ function optionalPositiveInt(args, key, options) {
 }
 
 // src/tools/tool-output.ts
-import fs9 from "node:fs/promises";
+import fs10 from "node:fs/promises";
 import path14 from "node:path";
 var TOOL_OUTPUT_DIR = ".tool-output";
 function readerFor(permissions) {
@@ -194161,8 +194215,8 @@ ${body}`;
     this.saved += 1;
     const name2 = `${fileSafe(this.options.nodeId)}-${fileSafe(tool2)}-${this.saved}.txt`;
     const dir = path14.join(this.options.workspace.root, TOOL_OUTPUT_DIR);
-    await fs9.mkdir(dir, { recursive: true });
-    await fs9.writeFile(path14.join(dir, name2), content);
+    await fs10.mkdir(dir, { recursive: true });
+    await fs10.writeFile(path14.join(dir, name2), content);
     return `${TOOL_OUTPUT_DIR}/${name2}`;
   }
 };
@@ -194209,7 +194263,7 @@ function fileSafe(value) {
 
 // src/tools/jobs.ts
 import { spawn as spawn3 } from "node:child_process";
-import fs10 from "node:fs";
+import fs11 from "node:fs";
 import fsp2 from "node:fs/promises";
 import path15 from "node:path";
 var GROUP_POLL_MS = 250;
@@ -194236,7 +194290,7 @@ var JobRegistry = class {
     const home = this.options.workspace.root;
     await fsp2.mkdir(path15.join(home, LOG_DIR), { recursive: true });
     await fsp2.mkdir(path15.join(home, "tmp"), { recursive: true });
-    const fd = fs10.openSync(path15.join(home, log), "a");
+    const fd = fs11.openSync(path15.join(home, log), "a");
     let child;
     try {
       child = spawn3(command2, {
@@ -194247,11 +194301,11 @@ var JobRegistry = class {
         stdio: ["ignore", fd, fd]
       });
     } finally {
-      fs10.closeSync(fd);
+      fs11.closeSync(fd);
     }
     const tracked = this.track({ id: id2, command: command2, nodeId, log }, timeoutMs, child, child.pid);
     child.on("error", (error62) => {
-      fs10.appendFile(path15.join(home, log), `
+      fs11.appendFile(path15.join(home, log), `
 [job could not start: ${error62.message}]
 `, () => void 0);
       tracked.finish("exited", `could not start: ${error62.message}`);
@@ -194640,7 +194694,7 @@ var publicWebDispatcher = new import_undici.Agent({ connect: { lookup: guardedLo
 var COMPLETE_TASK_TOOL = "complete_task";
 var DENIED_COMMANDS = /* @__PURE__ */ new Set(["sudo", "su", "doas"]);
 var SHELL_SEPARATORS = /[\s;&|(){}<>`$=]+/;
-var WEB_FETCH_USER_AGENT = `agents-automations/${VERSION2} (local agent runtime)`;
+var WEB_FETCH_USER_AGENT = `leafi/${VERSION2} (local agent runtime)`;
 var MAX_REDIRECTS = 3;
 function createNodeToolkit({ node: node2, workspace, limits, signal, email: email3, mcp: mcp2, output: shared, jobs }) {
   const output2 = shared ?? createToolOutput(node2, workspace, limits);
@@ -194777,7 +194831,7 @@ async function readFileTool(workspace, args, output2) {
   const offset = optionalByteCount(args, "offset", 0);
   const length = Math.min(optionalByteCount(args, "length", output2.limitBytes) || output2.limitBytes, output2.limitBytes);
   const resolved = await workspace.resolve(target);
-  const handle = await fs11.open(resolved, "r");
+  const handle = await fs12.open(resolved, "r");
   try {
     const { size } = await handle.stat();
     if (offset > 0 && offset >= size) {
@@ -194819,8 +194873,8 @@ async function writeFileTool(workspace, args) {
   const target = requireString(args, "path");
   const content = requireString(args, "content", { allowEmpty: true });
   const resolved = await workspace.resolve(target);
-  await fs11.mkdir(path16.dirname(resolved), { recursive: true });
-  await fs11.writeFile(resolved, content, "utf8");
+  await fs12.mkdir(path16.dirname(resolved), { recursive: true });
+  await fs12.writeFile(resolved, content, "utf8");
   return `Wrote ${Buffer.byteLength(content, "utf8")} bytes to ${target}.`;
 }
 async function runBashTool(workspace, args, limits, output2, signal, jobs) {
@@ -194842,7 +194896,7 @@ async function runBashTool(workspace, args, limits, output2, signal, jobs) {
   const timeoutMs = Math.min(seconds === void 0 ? limits.bashTimeoutMs : seconds * 1e3, maxBashTimeout(limits));
   const collectLimit = output2.saving ? output2.saveLimitBytes : output2.limitBytes;
   const home = workspace.root;
-  await fs11.mkdir(path16.join(home, "tmp"), { recursive: true });
+  await fs12.mkdir(path16.join(home, "tmp"), { recursive: true });
   return new Promise((resolve2) => {
     const child = spawn4(command2, {
       cwd: home,
@@ -212043,7 +212097,7 @@ function createEmailToolkit(options) {
 }
 
 // src/tools/workspace.ts
-import fs12 from "node:fs/promises";
+import fs13 from "node:fs/promises";
 import path17 from "node:path";
 var WorkspaceEscapeError = class extends Error {
   constructor(message) {
@@ -212059,8 +212113,8 @@ var Workspace = class _Workspace {
   root;
   rootReal;
   static async open(root) {
-    await fs12.mkdir(root, { recursive: true });
-    return new _Workspace(root, await fs12.realpath(root));
+    await fs13.mkdir(root, { recursive: true });
+    return new _Workspace(root, await fs13.realpath(root));
   }
   async resolve(target) {
     if (typeof target !== "string" || target.trim().length === 0) {
@@ -212079,8 +212133,8 @@ async function realpathOfNearestExisting(absolute) {
   let current = absolute;
   for (; ; ) {
     try {
-      await fs12.lstat(current);
-      const real = await fs12.realpath(current);
+      await fs13.lstat(current);
+      const real = await fs13.realpath(current);
       return path17.resolve(real, ...missing.reverse());
     } catch {
       const parent = path17.dirname(current);
@@ -212096,7 +212150,7 @@ async function realpathOfNearestExisting(absolute) {
 // src/runtime/run-events.ts
 import { randomUUID as randomUUID5 } from "node:crypto";
 import { createWriteStream } from "node:fs";
-import fs13 from "node:fs/promises";
+import fs14 from "node:fs/promises";
 import path18 from "node:path";
 var RunEventSink = class _RunEventSink {
   constructor(options) {
@@ -212108,7 +212162,7 @@ var RunEventSink = class _RunEventSink {
   static async open(options) {
     const sink = new _RunEventSink(options);
     if (options.file) {
-      await fs13.mkdir(path18.dirname(options.file), { recursive: true, mode: PRIVATE_DIR_MODE });
+      await fs14.mkdir(path18.dirname(options.file), { recursive: true, mode: PRIVATE_DIR_MODE });
       sink.stream = createWriteStream(options.file, { flags: "a", mode: PRIVATE_FILE_MODE });
     }
     return sink;
@@ -212514,7 +212568,7 @@ var RunExecutor = class {
     const connection = this.email.open();
     if (!connection) {
       throw new NodeFailureError(
-        `Node "${node2.label}" needs mailbox access, but no mailbox is configured. Set AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD in the environment.`,
+        `Node "${node2.label}" needs mailbox access, but no mailbox is configured. Set LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD in the environment.`,
         node2.id
       );
     }
@@ -212555,7 +212609,7 @@ var RunExecutor = class {
       });
     } catch (error62) {
       throw new NodeFailureError(
-        `Node "${node2.label}" needs the MCP server, but it could not start. ${describeError2(error62)} Set AGENTS_AUTOMATIONS_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${this.config.mcpCommand}).`,
+        `Node "${node2.label}" needs the MCP server, but it could not start. ${describeError2(error62)} Set LEAFI_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${this.config.mcpCommand}).`,
         node2.id
       );
     }
@@ -212648,7 +212702,7 @@ var FLAGS = {
   events: { takesValue: true, description: "Event output: ndjson | none | pretty." },
   strict: { takesValue: false, description: "validate: treat design warnings as failures." },
   format: { takesValue: true, description: "graph: ascii | mermaid | dot." },
-  "env-file": { takesValue: true, description: "Load environment variables from this file instead of ~/.agents-automations/.env." },
+  "env-file": { takesValue: true, description: "Load environment variables from this file instead of ~/.leafi/.env." },
   "data-dir": { takesValue: true, description: "Store run artifacts under this directory." },
   save: { takesValue: false, description: "Persist run metadata and events." },
   "no-save": { takesValue: false, description: "Do not persist run metadata or events." },
@@ -212727,7 +212781,7 @@ var GLOBAL_FLAGS = ["env-file", "data-dir"];
 function requireFlag(parsed, name2) {
   const value = parsed.flags[name2];
   if (typeof value !== "string" || value.length === 0) {
-    throw new UsageError(`"agents-automations ${parsed.command}" needs --${name2}.`);
+    throw new UsageError(`"leafi ${parsed.command}" needs --${name2}.`);
   }
   return value;
 }
@@ -212749,15 +212803,15 @@ function assertNoPositionals(parsed) {
     throw new UsageError(`Unexpected argument "${parsed.positionals[0]}".`);
   }
 }
-var COMMON_HEADER = `agents-automations - run automations made of linked LLM agents
+var COMMON_HEADER = `leafi - run automations made of linked LLM agents
 
 Usage:
-  agents-automations <command> [flags]
-  agents-automations --version
+  leafi <command> [flags]
+  leafi --version
 
 Commands:
   init [--provider <id>] [--yes]
-                              Set up ~/.agents-automations/.env and write a starter
+                              Set up ~/.leafi/.env and write a starter
                               flow.json to the current directory.
   settings [--allow <list>] [--deny <list>]
                               Choose which tools MCP clients may give flows,
@@ -212785,13 +212839,13 @@ var OUTPUT_CONTRACT = `Output:
   followed by a final line: {"type":"result","run":{...}}.
 
 Flow JSON:
-  Run "agents-automations schema" for the JSON Schema and "agents-automations schema example"
+  Run "leafi schema" for the JSON Schema and "leafi schema example"
   for a runnable two-node flow.`;
 var RUNTIME = `Runtime:
-  Settings are read from ~/.agents-automations/.env (the data directory's .env), or
+  Settings are read from ~/.leafi/.env (the data directory's .env), or
   from --env-file. A .env in the current directory is not read.
-  Run artifacts live under ~/.agents-automations unless --data-dir or DATA_DIR is set.
-  LangSmith tracing variables are ignored unless AGENTS_AUTOMATIONS_LANGSMITH_TRACING=true.
+  Run artifacts live under ~/.leafi unless --data-dir or DATA_DIR is set.
+  LangSmith tracing variables are ignored unless LEAFI_LANGSMITH_TRACING=true.
   --no-save keeps the workspace but writes neither meta.json nor events.jsonl.`;
 function providerCatalogText() {
   const lines = PROVIDER_CATALOG.map(
@@ -212816,10 +212870,10 @@ ${providerCatalogText()}
 function commandHelp(command2) {
   switch (command2) {
     case "init":
-      return `agents-automations init [--provider <id>] [--yes]
+      return `leafi init [--provider <id>] [--yes]
 
 Gets a new machine ready to run flows:
-  - creates the data directory (~/.agents-automations, owner-only);
+  - creates the data directory (~/.leafi, owner-only);
   - writes its .env settings file (owner-only) unless one exists, and, in a
     terminal, asks for one provider's API key with the input hidden;
   - writes a starter research flow to ./flow.json unless that file exists.
@@ -212833,21 +212887,21 @@ Flags:
                      anthropic with --yes or off a terminal).
   --yes              Ask nothing.
   --json             Print the JSON report even in a terminal.
-  --env-file <path>  Write the settings here instead of ~/.agents-automations/.env.
-  --data-dir <path>  Use this data directory instead of ~/.agents-automations.
+  --env-file <path>  Write the settings here instead of ~/.leafi/.env.
+  --data-dir <path>  Use this data directory instead of ~/.leafi.
 
 To install into Hermes, Claude Code, Claude Desktop or Cursor, use the installer
 (see the README); its setup is the MCP server's init.
 `;
     case "settings":
-      return `agents-automations settings [--allow <list>] [--deny <list>] [--json]
+      return `leafi settings [--allow <list>] [--deny <list>] [--json]
 
-Changes which tools the MCP server (agents-automations-mcp, and the Hermes plugin)
-lets a flow use, by writing the AGENTS_AUTOMATIONS_ALLOW_* lines of its settings files for you.
-Flows run with "agents-automations run" are not limited by these.
+Changes which tools the MCP server (leafi-mcp, and the Hermes plugin)
+lets a flow use, by writing the LEAFI_ALLOW_* lines of its settings files for you.
+Flows run with "leafi run" are not limited by these.
 
 It changes every file in use: Hermes's ($HERMES_HOME/.env or ~/.hermes/.env)
-when the Hermes plugin is installed, and ~/.agents-automations/.env when it
+when the Hermes plugin is installed, and ~/.leafi/.env when it
 exists or Hermes has no plugin. One checklist, or one --allow/--deny, applies
 to all of them.
 
@@ -212866,10 +212920,10 @@ Flags:
                      "--allow all --deny bash" allows everything but bash.
   --json             Print the result as JSON even in a terminal.
   --env-file <path>  Change this file instead.
-  --data-dir <path>  Use this data directory's .env instead of ~/.agents-automations.
+  --data-dir <path>  Use this data directory's .env instead of ~/.leafi.
 `;
     case "validate":
-      return `agents-automations validate --graph <path|->
+      return `leafi validate --graph <path|->
 
 Parses and validates a flow without touching a model. Prints
 {"ok":bool,"issues":[...],"warnings":[...],"minimum":{...}} on stdout.
@@ -212881,14 +212935,14 @@ Flags:
   --help             Show this help.
 `;
     case "schema":
-      return `agents-automations schema [example]
+      return `leafi schema [example]
 
 Prints the flow JSON Schema to stdout, or a runnable example with
-"agents-automations schema example". "schema example | agents-automations validate --graph -"
+"leafi schema example". "schema example | leafi validate --graph -"
 exits 0, so the example is always valid.
 `;
     case "run":
-      return `agents-automations run --graph <path|-> [--input <text>|--input-file <path>] [--json] [--events <ndjson|none|pretty>]
+      return `leafi run --graph <path|-> [--input <text>|--input-file <path>] [--json] [--events <ndjson|none|pretty>]
 
 Executes a flow, streams its events, and waits for the result.
 
@@ -212912,18 +212966,18 @@ ${RUNTIME}
 ${providerCatalogText()}
 `;
     case "graph":
-      return `agents-automations graph --graph <path|-> [--format ascii|mermaid|dot]
+      return `leafi graph --graph <path|-> [--format ascii|mermaid|dot]
 
 Draws the flow. The ascii format is the default and fits a terminal.
 `;
     case "providers":
-      return `agents-automations providers
+      return `leafi providers
 
 Lists the providers whose API key is configured, with the models each offers.
 The list is fetched live and falls back to the static catalog.
 `;
     case "runs":
-      return `agents-automations runs [list|show <id>]
+      return `leafi runs [list|show <id>]
 
 Lists persisted runs, or prints one run's metadata and events.
 `;
@@ -213061,7 +213115,7 @@ async function runGraph(parsed, context2) {
 }
 
 // src/cli/init.ts
-import fs14 from "node:fs/promises";
+import fs15 from "node:fs/promises";
 import path20 from "node:path";
 
 // src/app/starter-flow.ts
@@ -213150,7 +213204,7 @@ function quoteEnvValue(value) {
 }
 
 // src/config/env-template.ts
-var ENV_TEMPLATE = `# Written by "agents-automations init". Settings for every agents-automations command.
+var ENV_TEMPLATE = `# Written by "leafi init". Settings for every leafi command.
 # Variables already set in the shell take precedence over this file.
 
 # Provider keys: set at least one. A node can only use a model whose provider
@@ -213162,8 +213216,8 @@ GOOGLE_API_KEY=
 OPENROUTER_API_KEY=
 
 # Permissions: the tools a flow started over MCP (from Hermes, Claude Desktop,
-# Cursor ...) may use. Flows run with \`agents-automations run\` are not limited by
-# these. \`agents-automations settings\` changes them for you; a line left out keeps the
+# Cursor ...) may use. Flows run with \`leafi run\` are not limited by
+# these. \`leafi settings\` changes them for you; a line left out keeps the
 # value shown.
 #   web         web_fetch
 #   write       write_file, inside the run workspace
@@ -213172,32 +213226,32 @@ OPENROUTER_API_KEY=
 #   mcp         tools from an MCP server (the launcher below; a headless Chrome
 #               by default)
 #   flow-paths  passing a flow as a file path instead of inline JSON
-# AGENTS_AUTOMATIONS_ALLOW_WEB=false
-# AGENTS_AUTOMATIONS_ALLOW_WRITE=false
-# AGENTS_AUTOMATIONS_ALLOW_BASH=false
-# AGENTS_AUTOMATIONS_ALLOW_EMAIL=false
-# AGENTS_AUTOMATIONS_ALLOW_MCP=false
-# AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS=true
+# LEAFI_ALLOW_WEB=false
+# LEAFI_ALLOW_WRITE=false
+# LEAFI_ALLOW_BASH=false
+# LEAFI_ALLOW_EMAIL=false
+# LEAFI_ALLOW_MCP=false
+# LEAFI_ALLOW_FLOW_PATHS=true
 
 # Mailbox, for email nodes: read-only, over IMAP, with an app password. Gmail
 # offers one once 2-Step Verification is on; the account password never works.
 # With the address or password empty, agents get no email tools.
-AGENTS_AUTOMATIONS_EMAIL_ADDRESS=
-AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD=
-AGENTS_AUTOMATIONS_EMAIL_IMAP_HOST=imap.gmail.com
-AGENTS_AUTOMATIONS_EMAIL_IMAP_PORT=993
-# AGENTS_AUTOMATIONS_EMAIL_TIMEOUT_MS=20000
+LEAFI_EMAIL_ADDRESS=
+LEAFI_EMAIL_APP_PASSWORD=
+LEAFI_EMAIL_IMAP_HOST=imap.gmail.com
+LEAFI_EMAIL_IMAP_PORT=993
+# LEAFI_EMAIL_TIMEOUT_MS=20000
 
 # Nodes holding the mcp permission start this MCP server launcher and may call
 # only the tools listed. The default is a headless Chrome (chrome-devtools-mcp)
 # with its read-and-navigate tools; to use another MCP server, set both the
 # command and its tool names. Pin an exact version: upgrade it on purpose, after
 # reading its notes.
-# AGENTS_AUTOMATIONS_MCP_COMMAND=npx -y chrome-devtools-mcp@1.10.1 --headless --isolated
-# AGENTS_AUTOMATIONS_MCP_TOOLS=new_page,navigate_page,take_snapshot,evaluate_script,list_pages,wait_for,click,type_text,press_key
-# AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS=120000
+# LEAFI_MCP_COMMAND=npx -y chrome-devtools-mcp@1.10.1 --headless --isolated
+# LEAFI_MCP_TOOLS=new_page,navigate_page,take_snapshot,evaluate_script,list_pages,wait_for,click,type_text,press_key
+# LEAFI_MCP_TIMEOUT_MS=120000
 
-# ---- Everything below is for ~/.agents-automations/.env only; Hermes ignores it. ----
+# ---- Everything below is for ~/.leafi/.env only; Hermes ignores it. ----
 
 # Extra environment variables to forward to \`run_bash\` and MCP servers.
 # Everything else is filtered out, so list only names a tool genuinely needs.
@@ -213228,13 +213282,13 @@ WEB_FETCH_LIMIT_BYTES=262144
 
 # LangChain/LangSmith tracing uploads every prompt and tool result, so its
 # variables (LANGSMITH_TRACING, ...) are ignored unless this is true.
-# AGENTS_AUTOMATIONS_LANGSMITH_TRACING=false
+# LEAFI_LANGSMITH_TRACING=false
 
-# Runtime state. Defaults to ~/.agents-automations.
-# AGENTS_AUTOMATIONS_HOME=
+# Runtime state. Defaults to ~/.leafi.
+# LEAFI_HOME=
 # DATA_DIR=
 
-# Limits for agents-automations-mcp.
+# Limits for leafi-mcp.
 # MCP_MAX_CONCURRENT_RUNS=2
 # MCP_MAX_FLOW_BYTES=262144
 # MCP_MAX_RESULT_BYTES=262144
@@ -213360,8 +213414,8 @@ async function runInit(parsed) {
   const dataDir = resolveDataDir(readOptionalFlag(parsed, "data-dir"));
   const envFlag = readOptionalFlag(parsed, "env-file");
   const envFile = envFlag ? path20.resolve(process.cwd(), envFlag) : path20.join(dataDir, ".env");
-  await fs14.mkdir(dataDir, { recursive: true, mode: PRIVATE_DIR_MODE });
-  await fs14.chmod(dataDir, PRIVATE_DIR_MODE);
+  await fs15.mkdir(dataDir, { recursive: true, mode: PRIVATE_DIR_MODE });
+  await fs15.chmod(dataDir, PRIVATE_DIR_MODE);
   const provider = await chooseProvider(parsed, interactive);
   const envKey = catalogEntry(provider).envKey;
   const keyInEnv = Boolean(process.env[envKey]?.trim());
@@ -213399,20 +213453,20 @@ async function chooseProvider(parsed, interactive) {
   return picked?.id ?? DEFAULT_PROVIDER;
 }
 async function writeEnvFile(file2, envKey, key) {
-  const existing = await fs14.readFile(file2, "utf8").catch(() => void 0);
+  const existing = await fs15.readFile(file2, "utf8").catch(() => void 0);
   if (existing !== void 0 && key.length === 0) {
     return "kept";
   }
   const base = existing ?? ENV_TEMPLATE;
   const content = key.length === 0 ? base : setEnvValues(base, { [envKey]: key });
-  await fs14.mkdir(path20.dirname(file2), { recursive: true, mode: PRIVATE_DIR_MODE });
-  await fs14.writeFile(file2, content, { encoding: "utf8", mode: PRIVATE_FILE_MODE });
-  await fs14.chmod(file2, PRIVATE_FILE_MODE);
+  await fs15.mkdir(path20.dirname(file2), { recursive: true, mode: PRIVATE_DIR_MODE });
+  await fs15.writeFile(file2, content, { encoding: "utf8", mode: PRIVATE_FILE_MODE });
+  await fs15.chmod(file2, PRIVATE_FILE_MODE);
   return existing === void 0 ? "created" : "updated";
 }
 async function writeIfMissing(file2, content) {
   try {
-    await fs14.writeFile(file2, content, { encoding: "utf8", flag: "wx" });
+    await fs15.writeFile(file2, content, { encoding: "utf8", flag: "wx" });
     return "created";
   } catch (error62) {
     if (error62.code === "EEXIST") {
@@ -213441,8 +213495,8 @@ function summary(options) {
     lines.push("Next:");
   }
   lines.push(
-    `  agents-automations graph --graph ${FLOW_FILE}`,
-    `  agents-automations run --graph ${FLOW_FILE} --input "What is known about small language models for code?"`,
+    `  leafi graph --graph ${FLOW_FILE}`,
+    `  leafi run --graph ${FLOW_FILE} --input "What is known about small language models for code?"`,
     ""
   );
   return lines.join("\n");
@@ -213459,7 +213513,7 @@ async function runProviders(parsed, context2) {
 }
 
 // src/cli/run.ts
-import fs15 from "node:fs/promises";
+import fs16 from "node:fs/promises";
 
 // src/domain/flow-estimate.ts
 var MINIMUM_NOTE = "Minimum only: a lower bound, not a forecast. Agents loop and every iteration re-sends the context so far, so a real run spends more, by an amount that varies with the flow and the model. Compare with the run's costUsd.";
@@ -213984,7 +214038,7 @@ async function readRunInput(parsed) {
   }
   if (file2 !== void 0) {
     try {
-      return await fs15.readFile(file2, "utf8");
+      return await fs16.readFile(file2, "utf8");
     } catch {
       throw new FlowError(`Could not read the input file "${file2}".`);
     }
@@ -214006,7 +214060,7 @@ async function runRuns(parsed, context2) {
   }
   if (action === "show") {
     if (!id2) {
-      throw new UsageError('"agents-automations runs show" needs a run id.');
+      throw new UsageError('"leafi runs show" needs a run id.');
     }
     const run2 = await context2.runs.getRun(id2);
     if (!run2) {
@@ -214027,9 +214081,9 @@ function writeJson(value) {
 var PROVIDERS = ["openai", "anthropic", "google", "openrouter"];
 var FLOW_SCHEMA = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
-  $id: "https://agents-automations.local/schema/flow.json",
-  title: "agents-automations flow",
-  description: 'A flow document. Runtime-owned fields are not accepted; id, createdAt and updatedAt are added when the flow is loaded. Domain rules: at least one entry node (no incoming edges), all of which run in parallel and receive --input; the graph must be connected; every node reachable from an entry; no cycles; label, model and prompt non-empty; with more than one outgoing edge, a "branch" node needs a unique branch and a non-empty condition per edge, a "parallel" node takes them all. "agents-automations validate" additionally reports design warnings (severity "warning") and a per-node minimum (tokens the flow implies, a lower bound) for flows that would waste tokens or decide non-deterministically.',
+  $id: "https://leafi.local/schema/flow.json",
+  title: "leafi flow",
+  description: 'A flow document. Runtime-owned fields are not accepted; id, createdAt and updatedAt are added when the flow is loaded. Domain rules: at least one entry node (no incoming edges), all of which run in parallel and receive --input; the graph must be connected; every node reachable from an entry; no cycles; label, model and prompt non-empty; with more than one outgoing edge, a "branch" node needs a unique branch and a non-empty condition per edge, a "parallel" node takes them all. "leafi validate" additionally reports design warnings (severity "warning") and a per-node minimum (tokens the flow implies, a lower bound) for flows that would waste tokens or decide non-deterministically.',
   type: "object",
   required: ["nodes", "edges"],
   properties: {
@@ -214052,7 +214106,7 @@ var FLOW_SCHEMA = {
           prompt: { type: "string", minLength: 1, description: "Required by validation." },
           permissions: {
             type: "object",
-            description: "Tools the agent may use. All default to false. email_read needs a mailbox credential (AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD). mcp launches the configured MCP server for this node (by default chrome-devtools-mcp, a headless Chrome), configured with AGENTS_AUTOMATIONS_MCP_COMMAND and AGENTS_AUTOMATIONS_MCP_TOOLS.",
+            description: "Tools the agent may use. All default to false. email_read needs a mailbox credential (LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD). mcp launches the configured MCP server for this node (by default chrome-devtools-mcp, a headless Chrome), configured with LEAFI_MCP_COMMAND and LEAFI_MCP_TOOLS.",
             properties: {
               read: { type: "boolean", default: false },
               write: { type: "boolean", default: false },
@@ -214066,7 +214120,7 @@ var FLOW_SCHEMA = {
               mcp: {
                 type: "boolean",
                 default: false,
-                description: "The tools of the MCP server set by AGENTS_AUTOMATIONS_MCP_COMMAND, limited to AGENTS_AUTOMATIONS_MCP_TOOLS. By default that is a real Chrome through the chrome-devtools-mcp server: new_page, navigate_page, take_snapshot, evaluate_script and the rest. Use the browser for pages that block plain HTTP fetches."
+                description: "The tools of the MCP server set by LEAFI_MCP_COMMAND, limited to LEAFI_MCP_TOOLS. By default that is a real Chrome through the chrome-devtools-mcp server: new_page, navigate_page, take_snapshot, evaluate_script and the rest. Use the browser for pages that block plain HTTP fetches."
               }
             }
           },
@@ -214089,7 +214143,7 @@ var FLOW_SCHEMA = {
           lintIgnore: {
             type: "array",
             items: { type: "string" },
-            description: 'Lint rule codes this node opts out of, e.g. ["json-via-web-fetch"] when the endpoint really is HTML. See "agents-automations validate".'
+            description: 'Lint rule codes this node opts out of, e.g. ["json-via-web-fetch"] when the endpoint really is HTML. See "leafi validate".'
           },
           inputs: {
             type: "array",
@@ -214214,14 +214268,14 @@ import path24 from "node:path";
 // src/mcp/settings.ts
 var import_dotenv2 = __toESM(require_dist2());
 import fsSync from "node:fs";
-import fs17 from "node:fs/promises";
+import fs18 from "node:fs/promises";
 import path23 from "node:path";
 
 // src/mcp/hermes-home.ts
-import fs16 from "node:fs";
+import fs17 from "node:fs";
 import os4 from "node:os";
 import path21 from "node:path";
-var HERMES_PLUGIN_NAME = "agents-automations";
+var HERMES_PLUGIN_NAME = "leafi";
 function hermesHome() {
   const home = process.env.HERMES_HOME?.trim();
   if (home) {
@@ -214236,7 +214290,7 @@ function hermesEnvFile() {
   return path21.join(hermesHome(), ".env");
 }
 function hermesPluginInstalled() {
-  return fs16.existsSync(path21.join(hermesHome(), "plugins", HERMES_PLUGIN_NAME));
+  return fs17.existsSync(path21.join(hermesHome(), "plugins", HERMES_PLUGIN_NAME));
 }
 
 // src/mcp/policy.ts
@@ -214248,33 +214302,33 @@ var PolicyError = class extends Error {
   }
 };
 var ALLOW_DEFAULTS = {
-  AGENTS_AUTOMATIONS_ALLOW_BASH: false,
-  AGENTS_AUTOMATIONS_ALLOW_WRITE: false,
-  AGENTS_AUTOMATIONS_ALLOW_WEB: false,
-  AGENTS_AUTOMATIONS_ALLOW_EMAIL: false,
-  AGENTS_AUTOMATIONS_ALLOW_MCP: false,
-  AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS: true
+  LEAFI_ALLOW_BASH: false,
+  LEAFI_ALLOW_WRITE: false,
+  LEAFI_ALLOW_WEB: false,
+  LEAFI_ALLOW_EMAIL: false,
+  LEAFI_ALLOW_MCP: false,
+  LEAFI_ALLOW_FLOW_PATHS: true
 };
 function readMcpPolicy(config2) {
   const allowed = (name2) => readBoolean(name2, ALLOW_DEFAULTS[name2]);
   return {
-    allowBash: allowed("AGENTS_AUTOMATIONS_ALLOW_BASH"),
-    allowWrite: allowed("AGENTS_AUTOMATIONS_ALLOW_WRITE"),
-    allowWeb: allowed("AGENTS_AUTOMATIONS_ALLOW_WEB"),
-    allowEmail: allowed("AGENTS_AUTOMATIONS_ALLOW_EMAIL"),
-    allowMcp: allowed("AGENTS_AUTOMATIONS_ALLOW_MCP"),
-    allowFlowPaths: allowed("AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS"),
+    allowBash: allowed("LEAFI_ALLOW_BASH"),
+    allowWrite: allowed("LEAFI_ALLOW_WRITE"),
+    allowWeb: allowed("LEAFI_ALLOW_WEB"),
+    allowEmail: allowed("LEAFI_ALLOW_EMAIL"),
+    allowMcp: allowed("LEAFI_ALLOW_MCP"),
+    allowFlowPaths: allowed("LEAFI_ALLOW_FLOW_PATHS"),
     maxConcurrentRuns: config2.mcpMaxConcurrentRuns,
     maxFlowBytes: config2.mcpMaxFlowBytes,
     maxResultBytes: config2.mcpMaxResultBytes
   };
 }
 var GATED = [
-  { permission: "web", setting: "AGENTS_AUTOMATIONS_ALLOW_WEB", id: "web", field: "allowWeb" },
-  { permission: "write", setting: "AGENTS_AUTOMATIONS_ALLOW_WRITE", id: "write", field: "allowWrite" },
-  { permission: "bash", setting: "AGENTS_AUTOMATIONS_ALLOW_BASH", id: "bash", field: "allowBash" },
-  { permission: "email_read", setting: "AGENTS_AUTOMATIONS_ALLOW_EMAIL", id: "email", field: "allowEmail" },
-  { permission: "mcp", setting: "AGENTS_AUTOMATIONS_ALLOW_MCP", id: "mcp", field: "allowMcp" }
+  { permission: "web", setting: "LEAFI_ALLOW_WEB", id: "web", field: "allowWeb" },
+  { permission: "write", setting: "LEAFI_ALLOW_WRITE", id: "write", field: "allowWrite" },
+  { permission: "bash", setting: "LEAFI_ALLOW_BASH", id: "bash", field: "allowBash" },
+  { permission: "email_read", setting: "LEAFI_ALLOW_EMAIL", id: "email", field: "allowEmail" },
+  { permission: "mcp", setting: "LEAFI_ALLOW_MCP", id: "mcp", field: "allowMcp" }
 ];
 function blockedPermissions(graph, policy, granted = /* @__PURE__ */ new Set()) {
   return GATED.filter((gate) => !policy[gate.field] && !granted.has(gate.setting)).map((gate) => ({ ...gate, nodes: graph.nodes.filter((node2) => node2.permissions[gate.permission]).map((node2) => node2.label) })).filter((blocked) => blocked.nodes.length > 0);
@@ -214302,18 +214356,18 @@ function assertFlowAllowed(graph, policy, granted) {
 }
 
 // src/mcp/settings.ts
-var SETTINGS_URL = "https://github.com/Bruce-Hopkins/agent-automations/blob/main/.env.example";
+var SETTINGS_URL = "https://github.com/Bruce-Hopkins/leafi/blob/main/.env.example";
 var PERMISSIONS_QUESTION = "Which permissions may flows use?";
 function permission(id2, name2, about, offered) {
   return { id: id2, name: name2, about, label: `${id2.padEnd(11)} ${about}`, offered };
 }
 var PERMISSIONS = [
-  permission("web", "AGENTS_AUTOMATIONS_ALLOW_WEB", "fetch web pages (web_fetch)", true),
-  permission("write", "AGENTS_AUTOMATIONS_ALLOW_WRITE", "write files in the run workspace (write_file)", true),
-  permission("bash", "AGENTS_AUTOMATIONS_ALLOW_BASH", "run shell commands (run_bash): any command you can", false),
-  permission("email", "AGENTS_AUTOMATIONS_ALLOW_EMAIL", "read your mailbox, read-only (needs a mailbox login)", false),
-  permission("mcp", "AGENTS_AUTOMATIONS_ALLOW_MCP", "tools from an MCP server (default: headless Chrome)", false),
-  permission("flow-paths", "AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS", "load a flow from a file path, not only inline JSON", true)
+  permission("web", "LEAFI_ALLOW_WEB", "fetch web pages (web_fetch)", true),
+  permission("write", "LEAFI_ALLOW_WRITE", "write files in the run workspace (write_file)", true),
+  permission("bash", "LEAFI_ALLOW_BASH", "run shell commands (run_bash): any command you can", false),
+  permission("email", "LEAFI_ALLOW_EMAIL", "read your mailbox, read-only (needs a mailbox login)", false),
+  permission("mcp", "LEAFI_ALLOW_MCP", "tools from an MCP server (default: headless Chrome)", false),
+  permission("flow-paths", "LEAFI_ALLOW_FLOW_PATHS", "load a flow from a file path, not only inline JSON", true)
 ];
 function isSet(values, name2) {
   return Boolean(values[name2]?.trim());
@@ -214338,7 +214392,7 @@ function permissionChanges(values, wanted) {
   return changes;
 }
 function mailboxMissing(values, wanted) {
-  return wanted.get("AGENTS_AUTOMATIONS_ALLOW_EMAIL") === true && !(isSet(values, "AGENTS_AUTOMATIONS_EMAIL_ADDRESS") && isSet(values, "AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD"));
+  return wanted.get("LEAFI_ALLOW_EMAIL") === true && !(isSet(values, "LEAFI_EMAIL_ADDRESS") && isSet(values, "LEAFI_EMAIL_APP_PASSWORD"));
 }
 function parsePermissionList(flag, text) {
   const ids = text.split(",").map((id2) => id2.trim().toLowerCase()).filter((id2) => id2.length > 0);
@@ -214358,7 +214412,7 @@ function parsePermissionList(flag, text) {
 }
 async function readIfPresent(file2) {
   try {
-    return await fs17.readFile(file2, "utf8");
+    return await fs18.readFile(file2, "utf8");
   } catch (error62) {
     if (error62.code === "ENOENT") {
       return void 0;
@@ -214367,15 +214421,15 @@ async function readIfPresent(file2) {
   }
 }
 async function writePrivate(file2, content) {
-  const target = await fs17.realpath(file2).catch(() => file2);
-  await fs17.mkdir(path23.dirname(target), { recursive: true, mode: PRIVATE_DIR_MODE });
+  const target = await fs18.realpath(file2).catch(() => file2);
+  await fs18.mkdir(path23.dirname(target), { recursive: true, mode: PRIVATE_DIR_MODE });
   const temp = `${target}.${process.pid}.tmp`;
   try {
-    await fs17.writeFile(temp, content, { encoding: "utf8", mode: PRIVATE_FILE_MODE, flag: "wx" });
-    await fs17.chmod(temp, PRIVATE_FILE_MODE);
-    await fs17.rename(temp, target);
+    await fs18.writeFile(temp, content, { encoding: "utf8", mode: PRIVATE_FILE_MODE, flag: "wx" });
+    await fs18.chmod(temp, PRIVATE_FILE_MODE);
+    await fs18.rename(temp, target);
   } finally {
-    await fs17.rm(temp, { force: true });
+    await fs18.rm(temp, { force: true });
   }
 }
 function hermesSettingsFile() {
@@ -214384,7 +214438,7 @@ function hermesSettingsFile() {
 function dataSettingsFile(dataDir) {
   return {
     envFile: path23.join(resolveDataDir(dataDir), ".env"),
-    reader: "the agents-automations command and the MCP server for your other clients",
+    reader: "the leafi command and the MCP server for your other clients",
     hermes: false
   };
 }
@@ -214398,17 +214452,17 @@ function settingsFiles(dataDir) {
 async function changePermissions(files, choose) {
   const read = await Promise.all(
     files.map(async (file2) => {
-      const existing = await readIfPresent(file2.envFile);
-      return { file: file2, existing, values: (0, import_dotenv2.parse)(existing ?? "") };
+      const { existing, renamed } = await readSettingsFile(file2.envFile);
+      return { file: file2, existing, renamed, values: (0, import_dotenv2.parse)(existing ?? "") };
     })
   );
   const wanted = await choose(read.map(({ values }) => serverReads(values)));
   return Promise.all(
-    read.map(async ({ file: file2, existing, values }, index2) => {
+    read.map(async ({ file: file2, existing, renamed, values }, index2) => {
       const want = wanted[index2] ?? serverReads(values);
       const changes = permissionChanges(values, want);
-      if (Object.keys(changes).length > 0) {
-        await writePrivate(file2.envFile, setEnvValues(existing ?? "", changes, "agents-automations permissions"));
+      if (Object.keys(changes).length > 0 || renamed) {
+        await writePrivate(file2.envFile, setEnvValues(existing ?? "", changes, "leafi permissions"));
       }
       return {
         envFile: file2.envFile,
@@ -214419,6 +214473,11 @@ async function changePermissions(files, choose) {
       };
     })
   );
+}
+async function readSettingsFile(file2) {
+  const raw = await readIfPresent(file2);
+  const existing = raw === void 0 ? void 0 : renameLegacyEnvKeys(raw);
+  return { existing, renamed: existing !== raw };
 }
 async function runSettings(options) {
   const allow = options.allow === void 0 ? [] : parsePermissionList("--allow", options.allow);
@@ -214484,7 +214543,7 @@ function settingsSummary(results, couldChange) {
   }
   for (const result of results) {
     if (result.mailboxMissing) {
-      lines.push(`Email is allowed, but ${result.envFile} has no AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD yet: ${SETTINGS_URL}`);
+      lines.push(`Email is allowed, but ${result.envFile} has no LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD yet: ${SETTINGS_URL}`);
     }
   }
   if (results.some((result) => result.saved.length > 0)) {
@@ -214641,12 +214700,12 @@ import path26 from "node:path";
 
 // src/mcp/agents.ts
 import { spawn as spawn5 } from "node:child_process";
-import fs18 from "node:fs";
+import fs19 from "node:fs";
 import os5 from "node:os";
 import path25 from "node:path";
-var SERVER_NAME = "agents-automations";
-var DEFAULT_PLUGIN_SOURCE = "Bruce-Hopkins/agent-automations/hermes-plugin";
-async function findAgents(pluginSource = process.env.AGENTS_AUTOMATIONS_PLUGIN_SOURCE?.trim() || DEFAULT_PLUGIN_SOURCE) {
+var SERVER_NAME = "leafi";
+var DEFAULT_PLUGIN_SOURCE = "Bruce-Hopkins/leafi/hermes-plugin";
+async function findAgents(pluginSource = process.env.LEAFI_PLUGIN_SOURCE?.trim() || DEFAULT_PLUGIN_SOURCE) {
   const agents = [];
   const hermes = findCommand("hermes");
   if (hermes) {
@@ -214657,7 +214716,7 @@ async function findAgents(pluginSource = process.env.AGENTS_AUTOMATIONS_PLUGIN_S
     agents.push(claudeCodeAgent(claude));
   }
   for (const app of configFileApps()) {
-    if (fs18.existsSync(app.dir)) {
+    if (fs19.existsSync(app.dir)) {
       agents.push(configFileAgent(app, await readMcpConfig(app.file)));
     }
   }
@@ -214672,8 +214731,8 @@ function findCommand(name2) {
     for (const extension of extensions2) {
       const file2 = path25.join(dir, `${name2}${extension}`);
       try {
-        fs18.accessSync(file2, fs18.constants.X_OK);
-        if (fs18.statSync(file2).isFile()) {
+        fs19.accessSync(file2, fs19.constants.X_OK);
+        if (fs19.statSync(file2).isFile()) {
           return file2;
         }
       } catch {
@@ -214690,7 +214749,7 @@ function hermesAgent(command2, status2, source) {
     detail: status2 === "enabled" ? "the plugin is installed and enabled" : status2 === "disabled" ? "enables the installed plugin" : "installs and enables the Hermes plugin",
     async install() {
       if (status2 === "enabled") {
-        return { ok: true, line: "Hermes: the plugin was already installed and enabled." };
+        return { ok: true, line: `Hermes: the plugin was already installed and enabled.${await legacyHermesNote(command2)}` };
       }
       const args = status2 === "missing" ? ["plugins", "install", source, "--enable"] : ["plugins", "enable", HERMES_PLUGIN_NAME];
       process.stderr.write(`
@@ -214707,13 +214766,19 @@ Running: hermes ${args.join(" ")}
       }
       return {
         ok: true,
-        line: status2 === "missing" ? `Hermes: installed and enabled the plugin from ${source}.` : "Hermes: enabled the plugin."
+        line: (status2 === "missing" ? `Hermes: installed and enabled the plugin from ${source}.` : "Hermes: enabled the plugin.") + await legacyHermesNote(command2)
       };
     }
   };
 }
-async function hermesStatus(command2) {
-  const { code, output: output2 } = await run(command2, ["plugins", "show", HERMES_PLUGIN_NAME], "pipe");
+async function legacyHermesNote(command2) {
+  if (await hermesStatus(command2, LEGACY_SERVER_NAME) === "missing") {
+    return "";
+  }
+  return ` The plugin's old version, ${LEGACY_SERVER_NAME}, is still installed; once you have copied any flows you want from it, remove it with "hermes plugins remove ${LEGACY_SERVER_NAME}".`;
+}
+async function hermesStatus(command2, name2 = HERMES_PLUGIN_NAME) {
+  const { code, output: output2 } = await run(command2, ["plugins", "show", name2], "pipe");
   if (code !== 0) {
     return "missing";
   }
@@ -214722,14 +214787,17 @@ async function hermesStatus(command2) {
 }
 function claudeCodeAgent(command2) {
   const added = claudeCodeHasServer();
+  const legacy = claudeCodeHasServer(LEGACY_SERVER_NAME);
   return {
     id: "claude-code",
     name: "Claude Code",
     readsHermesEnv: false,
     detail: added ? "the server is already added" : 'adds the server with "claude mcp add", for all projects',
     async install(server) {
+      const removed = legacy && (await run(command2, ["mcp", "remove", "--scope", "user", LEGACY_SERVER_NAME], "pipe")).code === 0;
+      const replaced = removed ? ` and removed the old ${LEGACY_SERVER_NAME} entry` : "";
       if (added) {
-        return { ok: true, line: "Claude Code: the server was already added." };
+        return { ok: true, line: `Claude Code: the server was already added${replaced}.` };
       }
       const args = ["mcp", "add", "--scope", "user", SERVER_NAME, "--", "node", server, "--transport", "stdio"];
       const { code, output: output2 } = await run(command2, args, "pipe");
@@ -214739,15 +214807,15 @@ function claudeCodeAgent(command2) {
           line: `Claude Code: "claude ${args.join(" ")}" failed (exit ${code})${output2.trim() ? `: ${output2.trim().split("\n").pop()}` : ""}`
         };
       }
-      return { ok: true, line: "Claude Code: added the server for all projects." };
+      return { ok: true, line: `Claude Code: added the server for all projects${replaced}.` };
     }
   };
 }
-function claudeCodeHasServer() {
+function claudeCodeHasServer(name2 = SERVER_NAME) {
   const dir = process.env.CLAUDE_CONFIG_DIR?.trim() || os5.homedir();
   try {
-    const config2 = JSON.parse(fs18.readFileSync(path25.join(dir, ".claude.json"), "utf8"));
-    return isObject4(config2) && isObject4(config2.mcpServers) && SERVER_NAME in config2.mcpServers;
+    const config2 = JSON.parse(fs19.readFileSync(path25.join(dir, ".claude.json"), "utf8"));
+    return isObject4(config2) && isObject4(config2.mcpServers) && name2 in config2.mcpServers;
   } catch {
     return false;
   }
@@ -214769,7 +214837,7 @@ function configFileAgent(app, config2) {
     id: app.id,
     name: app.name,
     readsHermesEnv: false,
-    detail: config2.servers?.[SERVER_NAME] ? `the server is already in ${shown}` : `adds the server to ${shown}`,
+    detail: config2.servers?.[LEGACY_SERVER_NAME] ? `replaces the old ${LEGACY_SERVER_NAME} entry in ${shown}` : config2.servers?.[SERVER_NAME] ? `the server is already in ${shown}` : `adds the server to ${shown}`,
     async install(server) {
       try {
         const change = await addToMcpConfig(app.file, mcpEntry(server));
@@ -214812,13 +214880,14 @@ async function addToMcpConfig(file2, entry) {
     throw new Error('its "mcpServers" is not an object');
   }
   const before = servers[SERVER_NAME];
-  if (JSON.stringify(before) === JSON.stringify(entry)) {
+  const { [LEGACY_SERVER_NAME]: legacy, ...rest } = servers;
+  if (legacy === void 0 && JSON.stringify(before) === JSON.stringify(entry)) {
     return "unchanged";
   }
-  config2.mcpServers = { ...servers, [SERVER_NAME]: entry };
+  config2.mcpServers = { ...rest, [SERVER_NAME]: entry };
   await writePrivate(file2, `${JSON.stringify(config2, null, 2)}
 `);
-  return before === void 0 ? "added" : "updated";
+  return before === void 0 && legacy === void 0 ? "added" : "updated";
 }
 function isObject4(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -214844,12 +214913,12 @@ function run(command2, args, stdio) {
 }
 
 // src/mcp/init.ts
-var AGENTS_QUESTION = "Where should agents-automations be installed?";
+var AGENTS_QUESTION = "Where should leafi be installed?";
 async function runSetup(options) {
   const server = serverScript();
   if (process.stdin.isTTY !== true || process.stderr.isTTY !== true) {
     process.stderr.write(
-      `init asks where to install agents-automations, and for an API key with the input hidden, so it needs a
+      `init asks where to install leafi, and for an API key with the input hidden, so it needs a
 terminal. Nothing was installed or changed. Run it in a terminal:
   node "${server}" init
 `
@@ -214892,8 +214961,8 @@ function settingsFilesFor(chosen, options) {
 async function initSettings(files, prompts) {
   const read = await Promise.all(
     files.map(async (file2) => {
-      const existing = await readIfPresent(file2.envFile);
-      return { file: file2, existing, current: (0, import_dotenv3.parse)(existing ?? "") };
+      const { existing, renamed } = await readSettingsFile(file2.envFile);
+      return { file: file2, existing, renamed, current: (0, import_dotenv3.parse)(existing ?? "") };
     })
   );
   const everywhere = (name2) => read.every(({ current }) => isSet(current, name2));
@@ -214912,18 +214981,18 @@ async function initSettings(files, prompts) {
   );
   const allowed = new Map(PERMISSIONS.map(({ name: name2 }, index2) => [name2, ticked[index2] ?? false]));
   const results = [];
-  for (const { file: file2, existing, current } of read) {
+  for (const { file: file2, existing, renamed, current } of read) {
     const values = key.length > 0 ? { [provider.envKey]: key } : {};
     Object.assign(values, permissionChanges(current, allowed));
     const create2 = existing === void 0 && !file2.hermes;
-    if (Object.keys(values).length > 0 || create2) {
-      const content = create2 ? setEnvValues(`# agents-automations settings. Every setting: ${SETTINGS_URL}
-`, values) : setEnvValues(existing ?? "", values, file2.hermes ? "agents-automations plugin" : "agents-automations");
+    if (Object.keys(values).length > 0 || create2 || renamed) {
+      const content = create2 ? setEnvValues(`# leafi settings. Every setting: ${SETTINGS_URL}
+`, values) : setEnvValues(existing ?? "", values, file2.hermes ? "leafi plugin" : "leafi");
       await writePrivate(file2.envFile, content);
     }
     results.push({
       envFile: file2.envFile,
-      saved: Object.keys(values).map((name2) => name2.startsWith("AGENTS_AUTOMATIONS_ALLOW_") ? `${name2}=${values[name2]}` : name2),
+      saved: Object.keys(values).map((name2) => name2.startsWith("LEAFI_ALLOW_") ? `${name2}=${values[name2]}` : name2),
       keyConfigured: key.length > 0 || PROVIDER_CATALOG.some((entry) => isSet(current, entry.envKey)),
       mailboxMissing: mailboxMissing(current, allowed)
     });
@@ -214951,7 +215020,7 @@ function summary2(results, chosen, installs, server) {
   const noMailbox = results.filter((result) => result.mailboxMissing).map((result) => result.envFile);
   if (noMailbox.length > 0) {
     lines.push(
-      `Email is allowed, but ${noMailbox.join(" and ")} ${noMailbox.length > 1 ? "have" : "has"} no AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD yet: ${SETTINGS_URL}`
+      `Email is allowed, but ${noMailbox.join(" and ")} ${noMailbox.length > 1 ? "have" : "has"} no LEAFI_EMAIL_ADDRESS and LEAFI_EMAIL_APP_PASSWORD yet: ${SETTINGS_URL}`
     );
   }
   lines.push("", "Next:");
@@ -214977,13 +215046,13 @@ function summary2(results, chosen, installs, server) {
 // src/mcp/logger.ts
 function createStderrLogger() {
   return {
-    info: (message) => process.stderr.write(`[agents-automations-mcp] ${message}
+    info: (message) => process.stderr.write(`[leafi-mcp] ${message}
 `),
-    warn: (message) => process.stderr.write(`[agents-automations-mcp] warning: ${message}
+    warn: (message) => process.stderr.write(`[leafi-mcp] warning: ${message}
 `),
     error: (message, error62) => {
       const detail = error62 instanceof Error ? `: ${error62.message}` : error62 === void 0 ? "" : `: ${String(error62)}`;
-      process.stderr.write(`[agents-automations-mcp] error: ${message}${detail}
+      process.stderr.write(`[leafi-mcp] error: ${message}${detail}
 `);
     }
   };
@@ -220998,7 +221067,7 @@ diagram it returns, as described under Delivery, before you run anything.`;
 var inputSchema4 = external_exports2.object({});
 var getFlowSchemaTool = {
   name: "get_flow_schema",
-  description: 'Return the JSON Schema for a agents-automations flow document, plus "designGuide": the rules for choosing node boundaries, tiers and wiring. Read the guide before authoring a flow.',
+  description: 'Return the JSON Schema for a leafi flow document, plus "designGuide": the rules for choosing node boundaries, tiers and wiring. Read the guide before authoring a flow.',
   inputSchema: inputSchema4,
   annotations: { readOnlyHint: true },
   async handle(_input, context2) {
@@ -221292,7 +221361,7 @@ var TOOLS = [
 function registerExampleResource(server) {
   server.registerResource(
     "example-flow",
-    "agents-automations://examples/example",
+    "leafi://examples/example",
     {
       title: "Runnable example flow",
       description: "A two-node flow that passes validate_flow.",
@@ -221308,10 +221377,10 @@ function registerExampleResource(server) {
 function registerFlowSchemaResource(server) {
   server.registerResource(
     "flow-schema",
-    "agents-automations://schema/flow",
+    "leafi://schema/flow",
     {
       title: "Flow JSON Schema",
-      description: "The contract for a agents-automations flow document.",
+      description: "The contract for a leafi flow document.",
       mimeType: "application/schema+json"
     },
     async (uri2) => ({
@@ -221329,7 +221398,7 @@ function registerResources(server) {
 // src/mcp/server.ts
 var ASK_TIMEOUT_MS = 5 * 60 * 1e3;
 function createMcpServer(context2) {
-  const server = new McpServer({ name: "agents-automations", version: VERSION2 });
+  const server = new McpServer({ name: "leafi", version: VERSION2 });
   for (const tool2 of TOOLS) {
     server.registerTool(
       tool2.name,
@@ -221464,22 +221533,22 @@ async function serveStdio(server) {
 }
 
 // src/mcp/main.ts
-var HELP = `agents-automations - run automations made of linked LLM agents, and serve them to an MCP client
+var HELP = `leafi - run automations made of linked LLM agents, and serve them to an MCP client
 
-Installed, this is ~/.agents-automations/server.mjs, and the installer links the
-agents-automations command to it; from a clone, it is agents-automations-mcp.
+Installed, this is ~/.leafi/server.mjs, and the installer links the
+leafi command to it; from a clone, it is leafi-mcp.
 
 Usage:
-  agents-automations <validate|schema|graph|run|runs|providers> [flags]
-                      Work with flows; "agents-automations <command> --help"
+  leafi <validate|schema|graph|run|runs|providers> [flags]
+                      Work with flows; "leafi <command> --help"
                       shows each command's flags.
-  agents-automations --transport stdio [--env-file <path>] [--data-dir <path>] [--no-env]
+  leafi --transport stdio [--env-file <path>] [--data-dir <path>] [--no-env]
                       Serve flows to an MCP client.
-  agents-automations init [--env-file <path>]
-  agents-automations settings [--allow <list>] [--deny <list>] [--json] [--env-file <path>]
-  agents-automations --version
+  leafi init [--env-file <path>]
+  leafi settings [--allow <list>] [--deny <list>] [--json] [--env-file <path>]
+  leafi --version
 
-Without the command on your PATH, "node ~/.agents-automations/server.mjs" takes
+Without the command on your PATH, "node ~/.leafi/server.mjs" takes
 the same arguments.
 
 stdio is the only transport in this release. stdout carries MCP JSON-RPC;
@@ -221489,13 +221558,13 @@ init is the setup the installer runs. It shows a checklist of the agents on
 this machine (Hermes, Claude Code, Claude Desktop, Cursor) and installs the
 server only into the ones you tick. Then it asks for a provider API key (input
 hidden) and which tools flows may use, and saves them where they are read:
-~/.agents-automations/.env, for this command and every other client, and
+~/.leafi/.env, for this command and every other client, and
 Hermes's .env too when you tick Hermes; or only --env-file. It needs a terminal;
 without one it changes nothing.
 
 settings changes only the permissions, so nobody has to edit a file by hand. It
 changes every file in use: Hermes's when the plugin is installed, and
-~/.agents-automations/.env when it exists or Hermes has no plugin. In a terminal it
+~/.leafi/.env when it exists or Hermes has no plugin. In a terminal it
 shows a checklist of what flows may use now; with --allow or --deny (web,
 write, bash, email, mcp, flow-paths, or all) it asks nothing, and --deny
 wins over --allow. Off a terminal with neither flag it only prints the
@@ -221523,6 +221592,7 @@ ${HELP}`);
     process.exitCode = 3;
     return;
   }
+  adoptLegacyEnv();
   if (argv[0] === "init") {
     const init = parseInitArgs(argv.slice(1));
     if (init.help) {
@@ -221690,7 +221760,7 @@ function requireValue(name2, value) {
   return value;
 }
 main().catch((error62) => {
-  process.stderr.write(`[agents-automations-mcp] fatal: ${error62 instanceof Error ? error62.message : String(error62)}
+  process.stderr.write(`[leafi-mcp] fatal: ${error62 instanceof Error ? error62.message : String(error62)}
 `);
   process.exitCode = 1;
 });
