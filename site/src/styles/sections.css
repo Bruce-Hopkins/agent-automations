@@ -1,28 +1,54 @@
-section:not(.hero) { padding: 72px 0; }
-@media (min-width: 980px) { section:not(.hero) { padding: 96px 0; } }
-.band { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.kicker { font: 500 13px/1 var(--mono); color: var(--accent); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
-.section-head { max-width: 680px; margin-bottom: 44px; }
-.section-head h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; }
-.section-head p { color: var(--ink-2); margin-top: 14px; font-size: 18px; }
+section:not(.hero) { padding: 80px 0; }
+@media (min-width: 980px) { section:not(.hero) { padding: 112px 0; } }
+.kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font: 500 13px/1 var(--mono); color: var(--kicker); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 16px;
+}
+.kicker::before { content: ""; width: 22px; height: 2px; border-radius: 2px; background: var(--brand-gradient); }
+.section-head { max-width: 700px; margin-bottom: 48px; }
+.section-head h2 { font-size: clamp(30px, 4.4vw, 46px); font-weight: 700; color: var(--heading); }
+.section-head p { color: var(--ink-2); margin-top: 16px; font-size: 18px; }
 
 /* Goals */
-.goals { display: grid; gap: 16px; }
+.goals { display: grid; gap: 18px; counter-reset: goal; }
 @media (min-width: 860px) { .goals { grid-template-columns: repeat(3, 1fr); } }
-.goal { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
-.goal .icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); margin-bottom: 18px; }
-.goal .icon svg { width: 20px; height: 20px; }
-.goal h3 { font-size: 20px; font-weight: 600; }
-.goal p { color: var(--ink-2); margin-top: 8px; font-size: 16px; }
+.goal {
+  position: relative; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px;
+  box-shadow: var(--shadow);
+  transition: border-color .2s, transform .2s;
+}
+/* A strip of the leaf's gradient along the top edge. */
+.goal::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; background: var(--brand-gradient); opacity: 0; transition: opacity .2s; }
+.goal:hover { border-color: var(--blue); transform: translateY(-2px); }
+.goal:hover::before { opacity: 1; }
+.goal .icon {
+  width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center;
+  background: var(--violet); color: var(--white); margin-bottom: 22px;
+  box-shadow: 0 8px 20px rgba(59, 23, 255, .28);
+}
+.goal .icon svg { width: 22px; height: 22px; }
+.goal h3 { font-size: 21px; font-weight: 700; color: var(--ink); }
+.goal p { color: var(--ink-2); margin-top: 10px; font-size: 16px; }
+@media (prefers-reduced-motion: reduce) { .goal:hover { transform: none; } }
 
-/* Final call to action and footer */
-.final { text-align: center; }
-.final h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; }
-.final p { color: var(--ink-2); margin: 14px auto 0; max-width: 52ch; font-size: 18px; }
+/* Final call to action: a quiet band, set off by a faint tint and hairlines. */
+.final {
+  text-align: center;
+  background: var(--band); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.final .leaf-mark { width: 64px; height: 64px; margin: 0 auto 22px; display: block; }
+.final h2 { font-size: clamp(30px, 4.4vw, 46px); font-weight: 700; color: var(--heading); }
+.final p { color: var(--ink-2); margin: 16px auto 0; max-width: 52ch; font-size: 18px; }
 .final .cta-row { justify-content: center; }
-footer { border-top: 1px solid var(--line); padding: 28px 0 40px; font-size: 14px; color: var(--ink-3); }
-footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+
+/* Footer: navy in both themes, closing the page the way the hero opens it. */
+footer { background: var(--navy); color: #8c93aa; padding: 32px 0 44px; font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; }
+footer .brand { font-size: 17px; color: var(--white); gap: 8px; }
+footer .brand img { width: 24px; height: 24px; }
 footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
 @media (min-width: 720px) { footer nav { margin-left: auto; } }
-footer a { color: var(--ink-2); text-decoration: none; }
-footer a:hover { color: var(--ink); text-decoration: underline; }
+footer a { color: #c3c8d8; text-decoration: none; }
+footer a:hover { color: var(--mint); text-decoration: underline; }
+footer .brand:hover { color: var(--white); text-decoration: none; }

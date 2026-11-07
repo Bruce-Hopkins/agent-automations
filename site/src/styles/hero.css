@@ -1,17 +1,20 @@
-/* The hero is always dark, like the sketch it comes from; the rest of the
-   page follows the visitor's theme. */
+/* The hero is always navy; the rest of the page follows the visitor's theme.
+   The graph is white, as in the logo; mint is the glow and the signal running
+   along it; violet fills the large shapes. */
 .hero {
-  --h-bg: #0b1020;
-  --h-ink: #f3f5f9;
-  --h-ink-2: #aeb6c6;
-  --h-ink-3: #6f7890;
-  --h-ink-sub: #8d96ab;
-  --h-line: #e3e8f1;
-  --h-accent: #10b981;
-  --h-accent-hot: #a3e635;
-  --h-dot: rgba(255, 255, 255, .065);
-  --h-panel: rgba(255, 255, 255, .04);
-  --h-panel-line: rgba(255, 255, 255, .12);
+  --h-bg: var(--navy);
+  --h-ink: var(--white);
+  --h-ink-2: #c3c8d8;
+  --h-ink-3: #8c93aa;
+  --h-ink-sub: #9aa2ba;
+  --h-line: var(--white);
+  --h-accent: var(--mint);
+  --h-accent-hot: var(--mint);
+  /* The diagram's signal: mostly mid blue with a quarter mint, so it stays bright on navy. */
+  --h-signal: color-mix(in srgb, var(--blue) 75%, var(--mint));
+  --h-dot: rgba(255, 255, 255, .07);
+  --h-panel: rgba(255, 255, 255, .05);
+  --h-panel-line: rgba(255, 255, 255, .14);
   /* Written by useParallax. */
   --sy: 0;
   --px: 0;
@@ -40,12 +43,15 @@
   inset: -14% -4%;
   z-index: -1;
   background:
-    radial-gradient(ellipse 46% 36% at 50% 16%, rgba(16, 185, 129, .16), transparent 70%),
+    /* The leaf's gradient as light: violet low on the left, mint high on the right. */
+    radial-gradient(ellipse 50% 46% at 14% 82%, rgba(59, 23, 255, .42), transparent 70%),
+    radial-gradient(ellipse 40% 34% at 50% 18%, rgba(30, 138, 221, .22), transparent 70%),
+    radial-gradient(ellipse 38% 34% at 88% 8%, rgba(0, 253, 186, .14), transparent 70%),
     radial-gradient(var(--h-dot) 1.2px, transparent 1.4px) 0 0 / 22px 22px;
 }
 .ambient { position: absolute; inset: 0; width: 100%; height: 100%; filter: blur(1.4px); opacity: 0; animation: fade-in 2.4s ease 1.4s forwards; }
-.ambient path { fill: none; stroke: var(--h-ink-3); stroke-width: 2; opacity: .45; }
-.ambient circle { fill: none; stroke: var(--h-ink-3); stroke-width: 2; opacity: .45; }
+.ambient path { fill: none; stroke: var(--blue); stroke-width: 2; opacity: .4; }
+.ambient circle { fill: none; stroke: var(--blue); stroke-width: 2; opacity: .4; }
 
 .hero-stage {
   /* As wide as fits, but short enough that the headline still shows on a laptop screen. */
@@ -74,13 +80,13 @@
   stroke-linejoin: round;
 }
 .hub-stroke, .edge { stroke: var(--h-line); stroke-width: 2.4; }
-.edge-glow { stroke: var(--h-accent); stroke-width: 10; opacity: .14; }
+.edge-glow { stroke: var(--blue); stroke-width: 12; opacity: .3; }
 .hub-label { fill: var(--h-ink); font-family: var(--sans); font-weight: 700; letter-spacing: -.01em; text-anchor: middle; opacity: 0; }
 .hub-sub { fill: var(--h-ink-sub); font-family: var(--mono); text-anchor: middle; opacity: 0; }
 
 .pulse {
   fill: none;
-  stroke: var(--h-accent-hot);
+  stroke: var(--h-signal);
   stroke-width: 3;
   stroke-linecap: butt;
   stroke-dasharray: var(--pd) var(--pg);
@@ -91,11 +97,11 @@
 
 .node-core { transform: scale(0); }
 .node-ring { fill: var(--h-bg); stroke: var(--h-line); stroke-width: 2.4; transition: stroke .2s; }
-.node-dot { fill: var(--h-ink-2); transition: fill .2s; }
-.node.is-person .node-ring { stroke: var(--h-accent); }
-.node:hover .node-ring { stroke: var(--h-accent); }
-.node:hover .node-dot { fill: var(--h-accent-hot); }
-.node-ripple { fill: none; stroke: var(--h-accent); stroke-width: 2; opacity: 0; }
+.node-dot { fill: var(--h-ink); transition: fill .2s; }
+.node.is-person .node-ring { stroke: var(--h-signal); stroke-width: 3; }
+.node:hover .node-ring { stroke: var(--blue); }
+.node:hover .node-dot { fill: var(--blue); }
+.node-ripple { fill: none; stroke: var(--h-signal); stroke-width: 2; opacity: 0; }
 .node-text { opacity: 0; transform: translateY(6px); }
 .node-label { fill: var(--h-ink); font-family: var(--sans); font-weight: 600; }
 .node-sub { fill: var(--h-ink-sub); font-family: var(--mono); }
@@ -145,34 +151,41 @@
   position: absolute;
   inset: 0 0 -88px;
   z-index: -1;
-  background: linear-gradient(to bottom, transparent, var(--h-bg) 72px);
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 100%, rgba(59, 23, 255, .34), transparent 72%),
+    linear-gradient(to bottom, transparent, var(--h-bg) 72px);
   pointer-events: none;
+}
+/* A hairline of the leaf's gradient where the hero ends, so it reads as its own band in dark mode too. */
+.hero::after {
+  content: ""; position: absolute; inset: auto 0 0; height: 2px; z-index: 3;
+  background: linear-gradient(90deg, var(--violet), var(--blue) 50%, var(--mint));
 }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
-  font: 500 13px/1 var(--mono); color: var(--h-ink-2);
-  background: var(--h-panel); border: 1px solid var(--h-panel-line);
+  font: 500 13px/1 var(--mono); color: var(--mint);
+  background: rgba(0, 253, 186, .08); border: 1px solid rgba(0, 253, 186, .3);
   padding: 7px 12px; border-radius: 999px; margin-bottom: 20px;
 }
-.pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--h-accent-hot); box-shadow: 0 0 0 3px rgba(163, 230, 53, .22); }
-.hero h1 { font-size: clamp(34px, 5.2vw, 60px); font-weight: 700; max-width: 20ch; margin: 0 auto; }
+.pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px rgba(0, 253, 186, .22), 0 0 12px var(--mint); }
+.hero h1 { font-size: clamp(36px, 5.6vw, 66px); font-weight: 700; max-width: 20ch; margin: 0 auto; }
 .hero h1 em { font-style: normal; color: var(--h-accent); }
-/* The logo's leaf gradient, where the browser can clip a background to text. */
+/* The leaf's gradient from blue up, where the browser can clip a background to
+   text: violet on navy is too dark to read. */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .hero h1 em { background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero h1 em { background: var(--text-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
 }
 .hero .install-note { font-size: 14px; color: var(--h-ink-3); margin: 12px auto 0; max-width: 600px; }
 .hero .cta-row { justify-content: center; }
-.hero .btn.primary { background: var(--h-ink); border-color: var(--h-ink); color: var(--h-bg); }
-.hero .btn.primary:hover { background: #fff; border-color: #fff; }
+.hero .btn.primary:hover { box-shadow: 0 0 0 4px rgba(30, 138, 221, .45), 0 0 32px rgba(0, 253, 186, .25); }
 .hero .btn.ghost { background: transparent; border-color: var(--h-panel-line); color: var(--h-ink); }
-.hero .btn.ghost:hover { border-color: rgba(255, 255, 255, .34); }
+.hero .btn.ghost:hover { border-color: var(--blue); background: rgba(30, 138, 221, .14); }
 
 /* ---------- Install box ---------- */
 .install {
   margin: 28px auto 0; max-width: 640px; text-align: left;
-  background: #080c19; border: 1px solid var(--h-panel-line); border-radius: var(--radius);
-  overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+  background: #070a16; border: 1px solid var(--h-panel-line); border-radius: var(--radius);
+  overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, .45), 0 0 0 1px rgba(59, 23, 255, .25), 0 0 60px rgba(59, 23, 255, .22);
 }
 .tabs { display: flex; gap: 2px; padding: 6px 6px 0; border-bottom: 1px solid var(--h-panel-line); overflow-x: auto; }
 .tab {
@@ -192,6 +205,6 @@
   border: 1px solid var(--h-panel-line); background: transparent; color: var(--h-ink-3);
   cursor: pointer; transition: color .15s, border-color .15s;
 }
-.copy:hover { color: var(--h-ink); border-color: var(--h-ink-3); }
+.copy:hover { color: var(--h-ink); border-color: var(--blue); }
 .copy svg { width: 16px; height: 16px; }
 .copy.done { color: var(--h-accent-hot); }

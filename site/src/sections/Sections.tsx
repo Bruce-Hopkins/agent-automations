@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { GitHubStar, Icon, REPO } from "../components";
 
+const BASE = import.meta.env.BASE_URL;
+
 const GOALS: { icon: ReactNode; title: string; body: ReactNode }[] = [
   {
     icon: Icon.dollar,
@@ -47,8 +49,9 @@ export function Goals() {
 
 export function Prototype() {
   return (
-    <section className="final band">
+    <section className="final">
       <div className="wrap">
+        <img className="leaf-mark" src={`${BASE}leaf.svg`} alt="" width={64} height={64} />
         <h2>This is just a prototype.</h2>
         <p>More is on the way. Star the project on GitHub to follow the updates.</p>
         <div className="cta-row">
@@ -63,6 +66,10 @@ export function Footer() {
   return (
     <footer>
       <div className="wrap">
+        <a className="brand" href="#top">
+          <img src={`${BASE}leaf.svg`} alt="" width={24} height={24} />
+          leafi
+        </a>
         <span>MIT licensed · by Bruce Hopkins</span>
         <nav aria-label="Footer">
           <a href={`${REPO}#readme`}>README</a>
